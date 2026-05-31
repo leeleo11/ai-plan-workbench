@@ -1,0 +1,18 @@
+import type { Plan } from "@/lib/plan/schema";
+
+export function PhaseOutline({ plan }: { plan: Plan }) {
+  return (
+    <aside className="rounded-md border border-slate-200 bg-white p-4">
+      <h2 className="text-sm font-semibold text-slate-950">Phases</h2>
+      <div className="mt-4 grid gap-3">
+        {plan.phases.map((phase) => (
+          <div key={phase.id} className="border-l-2 border-teal-500 pl-3">
+            <h3 className="text-sm font-medium text-slate-950">{phase.title}</h3>
+            <p className="text-xs text-slate-500">{phase.startDate} to {phase.endDate}</p>
+            <p className="mt-1 text-xs text-slate-600">{phase.objective}</p>
+          </div>
+        ))}
+      </div>
+    </aside>
+  );
+}
