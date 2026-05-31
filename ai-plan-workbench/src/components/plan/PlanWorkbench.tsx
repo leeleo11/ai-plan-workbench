@@ -35,7 +35,7 @@ export function PlanWorkbench({ initialPlan }: PlanWorkbenchProps) {
       ...plan,
       tasks: plan.tasks.map((item) => (item.id === task.id ? task : item))
     };
-    commitPlan("edit task", nextPlan);
+    commitPlan("编辑任务", nextPlan);
     setSelectedTask(task);
   }
 
@@ -54,26 +54,38 @@ export function PlanWorkbench({ initialPlan }: PlanWorkbenchProps) {
     <section className="mx-auto grid max-w-7xl gap-5">
       <header className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
         <div>
-          <p className="text-sm font-medium uppercase tracking-wide text-teal-700">Validated Plan</p>
-          <h1 className="mt-2 text-3xl font-semibold text-slate-950">{plan.goal.title}</h1>
-          <p className="mt-2 text-sm text-slate-600">{plan.tasks.length} tasks · version {plan.version}</p>
+          <p className="text-sm font-medium uppercase tracking-wide text-teal-700">已校验计划</p>
+          <h1 className="mt-2 text-2xl font-bold text-slate-950">{plan.goal.title}</h1>
+          <div className="mt-2 flex items-center gap-4 text-sm text-slate-600">
+            <span>{plan.tasks.length} 个任务</span>
+            <span>·</span>
+            <span>版本 {plan.version}</span>
+            <span>·</span>
+            <span>{plan.goal.currentLevel} → {plan.goal.targetLevel}</span>
+            <span>·</span>
+            <span>每日 {plan.goal.dailyAvailableMinutes} 分钟</span>
+          </div>
         </div>
         <div className="flex gap-2">
-          <Button className="bg-white text-slate-950 ring-1 ring-slate-200 hover:bg-slate-100" onClick={undo} disabled={plan.history.length === 0}>
-            Undo
+          <Button
+            className="bg-white text-slate-950 ring-1 ring-slate-200 hover:bg-slate-100"
+            onClick={undo}
+            disabled={plan.history.length === 0}
+          >
+            撤销
           </Button>
           <Tabs
             value={tab}
             onChange={setTab}
             options={[
-              { value: "timeline", label: "Timeline" },
-              { value: "calendar", label: "Calendar" },
-              { value: "risks", label: "Risks" }
+              { value: "timeline", label: "时间线" },
+              { value: "calendar", label: "日历" },
+              { value: "risks", label: "校验报告" }
             ]}
           />
         </div>
       </header>
-      <div className="grid gap-5 lg:grid-cols-[280px_1fr_320px]">
+      <div className="grid gap-5 lg:grid-cols-[260px_1fr_300px]">
         <PhaseOutline plan={plan} />
         <div>
           {tab === "timeline" ? <TimelineView plan={plan} onSelectTask={setSelectedTask} /> : null}

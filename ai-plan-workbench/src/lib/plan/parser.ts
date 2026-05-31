@@ -16,7 +16,7 @@ function extractFirstNumberBefore(text: string, unitPattern: RegExp): number | u
 
 export function parseGoalInput(input: string): ParsedGoalInput {
   const lower = input.toLowerCase();
-  const isIelts = lower.includes("ielts") || input.includes("雅思");
+  const isIelts = lower.includes("ielts") || input.includes("雅思") || input.includes("雅思");
   const isPostgraduateEnglish = input.includes("考研英语") || lower.includes("postgraduate english");
   const durationDays =
     extractFirstNumberBefore(lower, /(\d+)\s*(day|days|天)/) ?? 90;

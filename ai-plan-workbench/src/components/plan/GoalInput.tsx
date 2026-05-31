@@ -7,16 +7,18 @@ import type { Plan } from "@/lib/plan/schema";
 
 type GoalInputProps = {
   onGenerated: (plan: Plan) => void;
+  onGenerateStart?: () => void;
 };
 
-export function GoalInput({ onGenerated }: GoalInputProps) {
-  const [input, setInput] = useState("I want to prepare for IELTS for 90 days, improve from 5.5 to 7.0, and study 2 hours per day.");
+export function GoalInput({ onGenerated, onGenerateStart }: GoalInputProps) {
+  const [input, setInput] = useState("我想用90天准备雅思，从5.5分提高到7.0分，每天学习2小时。");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   async function generatePlan() {
     setIsLoading(true);
     setError(null);
+    onGenerateStart?.();
 
     const response = await fetch("/api/plans/generate", {
       method: "POST",
@@ -28,7 +30,7 @@ export function GoalInput({ onGenerated }: GoalInputProps) {
     setIsLoading(false);
 
     if (!response.ok) {
-      setError(data.error ?? "Failed to generate plan.");
+      setError(data.error ?? "生成计划失败，请重试。");
       return;
     }
 
@@ -36,19 +38,37 @@ export function GoalInput({ onGenerated }: GoalInputProps) {
   }
 
   return (
-    <section className="mx-auto flex max-w-3xl flex-col gap-5">
-      <div>
-        <p className="text-sm font-medium uppercase tracking-wide text-teal-700">AI Plan Workbench</p>
-        <h1 className="mt-3 text-4xl font-semibold text-slate-950">Turn one goal into a validated study plan.</h1>
-        <p className="mt-3 text-base text-slate-600">
-          Start with one sentence. The prototype generates a structured plan you can inspect, edit, and rebalance.
+    <section className="mx-auto flex max-w-3xl flex-col gap-6">
+      <div className="text-center">
+        <p className="text-sm font-medium uppercase tracking-wide text-teal-700">AI 计划工作台</p>
+        <h1 className="mt-4 text-4xl font-bold text-slate-950">一句话目标，生成可执行计划</h1>
+        <p className="mt-3 text-lg text-slate-600">
+          输入你的目标，AI 自动生成结构化计划，支持编辑、校验和优化。
         </p>
       </div>
-      <Textarea value={input} onChange={(event) => setInput(event.target.value)} />
-      {error ? <p className="text-sm text-red-600">{error}</p> : null}
-      <Button onClick={generatePlan} disabled={isLoading || input.trim().length < 8}>
-        {isLoading ? "Generating..." : "Generate plan"}
-      </Button>
+      <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+        <label className="block text-sm font-medium text-slate-700 mb-2">描述你的目标</label>
+        <Textarea value={input} onChange={(event) => setInput(event.target.value)} />
+        <div className="mt-2 flex flex-wrap gap-2">
+          {[
+            "考研英语90天冲刺",
+            "30天学会Python数据分析",
+            "60天准备公务员考试"
+          ].map((example) => (
+            <button
+              key={example}
+              onClick={() => setInput(example)}
+              className="rounded-full bg-slate-100 px-3 py-1 text-xs text-slate-600 hover:bg-slate-200"
+            >
+              {example}
+            </button>
+          ))}
+        </div>
+        {error ? <p className="mt-3 text-sm text-red-600">{error}</p> : null}
+        <Button className="mt-4 w-full" onClick={generatePlan} disabled={isLoading || input.trim().length < 4}>
+          {isLoading ? "正在生成计划..." : "生成计划"}
+        </Button>
+      </div>
     </section>
   );
 }
