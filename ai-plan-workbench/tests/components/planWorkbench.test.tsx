@@ -43,7 +43,7 @@ describe("PlanWorkbench", () => {
     await userEvent.click(screen.getAllByRole("button", { name: "打卡通关" })[0]);
     await userEvent.click(screen.getByRole("button", { name: "待挑战" }));
 
-    expect(screen.queryByText("Memorize 80 core vocabulary words")).not.toBeInTheDocument();
-    expect(screen.getAllByText("Complete one IELTS reading passage and review mistakes").length).toBeGreaterThan(0);
+    expect(screen.queryByText("学习 Python 数据分析的一个核心概念")).not.toBeInTheDocument();
+    expect(screen.getAllByText("完成一组 Python 数据分析配套练习").length).toBeGreaterThan(0);
   });
 });

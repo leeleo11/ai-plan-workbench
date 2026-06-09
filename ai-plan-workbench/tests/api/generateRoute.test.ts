@@ -6,7 +6,7 @@ describe("POST /api/plans/generate", () => {
     const request = new Request("http://localhost/api/plans/generate", {
       method: "POST",
       body: JSON.stringify({
-        input: "I want to prepare for IELTS for 90 days, improve from 5.5 to 7.0, and study 2 hours per day."
+        input: "30天学会 Python 数据分析，从会一点基础语法到能独立完成一个小项目，每天学习1小时"
       })
     });
 
@@ -14,7 +14,7 @@ describe("POST /api/plans/generate", () => {
     const json = await response.json();
 
     expect(response.status).toBe(200);
-    expect(json.plan.goal.type).toBe("exam");
+    expect(json.plan.goal.type).toBe("learning");
     expect(json.plan.brief.summary).toContain("文字版规划");
     expect(json.plan.tasks.length).toBeGreaterThan(0);
   });

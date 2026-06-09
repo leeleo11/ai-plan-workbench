@@ -12,7 +12,7 @@ describe("validatePlan", () => {
   it("warns when a day exceeds available minutes", () => {
     const overloaded = {
       ...samplePlan,
-      goal: { ...samplePlan.goal, dailyAvailableMinutes: 60 }
+      goal: { ...samplePlan.goal, dailyAvailableMinutes: 30 }
     };
 
     const result = validatePlan(overloaded);
@@ -24,7 +24,7 @@ describe("validatePlan", () => {
   it("warns when a task title is too broad", () => {
     const vague = {
       ...samplePlan,
-      tasks: [{ ...samplePlan.tasks[0], title: "Study English" }]
+      tasks: [{ ...samplePlan.tasks[0], title: "practice" }]
     };
 
     const result = validatePlan(vague);

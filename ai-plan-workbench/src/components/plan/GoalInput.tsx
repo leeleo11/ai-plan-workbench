@@ -15,19 +15,19 @@ type GoalInputProps = {
 
 const examples = [
   {
-    goal: "备考雅思",
-    durationDays: "90",
-    currentLevel: "5.5",
-    targetLevel: "7.0",
-    dailyHours: "2",
+    goal: "30天养成晨跑习惯",
+    durationDays: "30",
+    currentLevel: "偶尔跑，坚持不下来",
+    targetLevel: "能连续跑30分钟不喘",
+    dailyHours: "1",
     startDate: "2026-06-02"
   },
   {
-    goal: "准备考研英语",
-    durationDays: "45",
-    currentLevel: "词汇薄弱，阅读慢",
-    targetLevel: "稳定完成真题阅读",
-    dailyHours: "3",
+    goal: "60天完成一个Side Project",
+    durationDays: "60",
+    currentLevel: "有想法但没动手",
+    targetLevel: "上线一个可用的小产品",
+    dailyHours: "2",
     startDate: "2026-06-02"
   },
   {
@@ -62,7 +62,7 @@ function composePlanInput({
     currentLevel.trim() || targetLevel.trim()
       ? `从${currentLevel.trim() || "未说明"}到${targetLevel.trim() || "未说明"}`
       : "",
-    dailyHours.trim() ? `每天学习${dailyHours.trim()}小时` : ""
+    dailyHours.trim() ? `每天投入${dailyHours.trim()}小时` : ""
   ].filter(Boolean);
 
   return parts.join("，");
@@ -126,7 +126,7 @@ export function GoalInput({
 
       onGenerated(data.plan);
     } catch {
-      const message = "网络连接不稳定，暂时没能联系到 MiMo。请确认 dev server 正在运行后再试。";
+      const message = "网络连接不稳定，请稍后再试。";
       setError(message);
       onGenerateError?.(message);
       onGenerateEnd?.();
@@ -175,7 +175,7 @@ export function GoalInput({
                 className="mt-2 min-h-24"
                 value={goal}
                 onChange={(event) => setGoal(event.target.value)}
-                placeholder="例如：备考雅思、准备考研英语、30天学会Python数据分析"
+                placeholder="例如：30天养成晨跑习惯、60天完成一个项目、学会Python数据分析"
               />
             </label>
 
@@ -203,7 +203,7 @@ export function GoalInput({
                 />
               </label>
               <label className="block sm:col-span-2">
-                <span className="block text-sm font-black text-[var(--ink)]">每天学习小时</span>
+                <span className="block text-sm font-black text-[var(--ink)]">每天投入小时</span>
                 <input
                   aria-label="每天学习小时"
                   className="mt-2 h-12 w-full rounded-lg border-2 border-[var(--line)] bg-[var(--paper)] px-4 text-base font-black text-[var(--ink)] outline-none shadow-[3px_3px_0_rgba(44,36,24,0.75)] transition focus:-translate-y-0.5 focus:shadow-[5px_5px_0_var(--line)]"
@@ -223,7 +223,7 @@ export function GoalInput({
                   className="mt-2 h-12 w-full rounded-lg border-2 border-[var(--line)] bg-[var(--paper)] px-4 text-base font-black text-[var(--ink)] outline-none shadow-[3px_3px_0_rgba(44,36,24,0.75)] transition focus:-translate-y-0.5 focus:shadow-[5px_5px_0_var(--line)]"
                   value={currentLevel}
                   onChange={(event) => setCurrentLevel(event.target.value)}
-                  placeholder="例如：5.5 / 零基础 / 已做完一轮"
+                  placeholder="例如：零基础 / 会一点 / 已做完一轮"
                 />
               </label>
               <label className="block">
@@ -233,7 +233,7 @@ export function GoalInput({
                   className="mt-2 h-12 w-full rounded-lg border-2 border-[var(--line)] bg-[var(--paper)] px-4 text-base font-black text-[var(--ink)] outline-none shadow-[3px_3px_0_rgba(44,36,24,0.75)] transition focus:-translate-y-0.5 focus:shadow-[5px_5px_0_var(--line)]"
                   value={targetLevel}
                   onChange={(event) => setTargetLevel(event.target.value)}
-                  placeholder="例如：7.0 / 能独立做项目"
+                  placeholder="例如：能独立做项目 / 连续跑30分钟"
                 />
               </label>
             </div>

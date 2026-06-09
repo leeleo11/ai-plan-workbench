@@ -26,17 +26,17 @@ const categoryLabel: Record<string, string> = {
 export function TaskEditor({ task, onChange, onClose }: TaskEditorProps) {
   if (!task) {
     return (
-      <aside className="comic-border-soft rounded-lg bg-white p-4">
+      <aside className="comic-border-soft rounded-lg p-4">
         <h2 className="text-base font-black text-[var(--ink)]">任务小纸条</h2>
-        <p className="mt-2 text-sm font-semibold leading-6 text-stone-600">
-          点左边任意一张任务卡，这里就能改标题、日期、时长和状态。
+        <p className="mt-2 text-sm font-semibold leading-6 text-slate-500">
+          点左边任意一张任务卡或者日历上的日期，这里就能改标题、日期、时长和状态。
         </p>
       </aside>
     );
   }
 
   return (
-    <aside className="comic-border-soft rounded-lg bg-white p-4">
+    <aside className="comic-border-soft rounded-lg p-4">
       <div className="flex items-center justify-between gap-3">
         <h2 className="text-base font-black text-[var(--ink)]">改这张任务卡</h2>
         <button className="text-sm font-black text-stone-500 hover:text-[var(--berry)]" onClick={onClose}>

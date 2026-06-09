@@ -53,24 +53,24 @@ function stripCodeFence(content: string): string {
 
 function buildSystemPrompt(): string {
   return [
-    "你是 MiMo，一个负责生成学习计划的 Plan Agent。",
+    "你是 MiMo，一个负责生成计划的 Plan Agent。",
     "你必须只输出 JSON，不要输出 Markdown，不要输出解释性前后缀。",
     "JSON 需要包含 summary、assumptions、sources、phaseObjectives、taskTitles。",
     "summary 是给用户阅读的文字版规划说明。",
     "assumptions 是这份计划使用的默认假设。",
     "sources 是规划依据，至少包含一个 model 来源。",
     "如果你使用了可公开访问的参考资料，sources 中要写入 url；不确定的网址不要编造。",
-    "phaseObjectives 是每个阶段的具体目标，必须贴合用户目标、当前水平和目标水平。",
+    "phaseObjectives 是每个阶段的具体目标，必须贴合用户目标。",
     "taskTitles 是每日任务标题，必须具体、可执行、能直接显示在计划图表里。",
     "taskDescriptions 是每日任务说明，说明具体做法、材料或产出。",
-    "不要输出泛泛的模板任务，例如“学习一个核心概念”；要写清楚学习对象、动作和产出。",
-    "不要承诺考试结果，只描述计划假设和执行建议。"
+    "不要输出泛泛的模板任务；要写清楚对象、动作和产出。",
+    "只描述计划假设和执行建议，不要承诺结果。"
   ].join("\n");
 }
 
 function buildOptimizeSystemPrompt(): string {
   return [
-    "你是 MiMo，一个负责微调学习任务卡的 Plan Agent。",
+    "你是 MiMo，一个负责微调任务卡的 Plan Agent。",
     "你必须只输出 JSON，不要输出 Markdown。",
     "JSON 只包含 updates。",
     "updates 中每一项包含 id、title、description。",
@@ -95,13 +95,13 @@ function buildGenerateUserPrompt(request: GeneratePlanRequest): string {
 
   return JSON.stringify(
     {
-      task: "根据用户目标和模板生成一份可编辑、可校验的学习计划内容。应用会负责日期、校验和图表结构，你负责生成真正贴合目标的阶段目标和每日任务标题。",
+      task: "根据用户目标和模板生成一份可编辑、可校验的计划内容。应用会负责日期、校验和图表结构，你负责生成真正贴合目标的阶段目标和每日任务标题。",
       parsedGoal: request.parsed,
       template: request.template,
       taskSlots,
       outputRequirements: {
         language: "zh-CN",
-        planStyle: "可爱学习闯关计划",
+        planStyle: "可爱闯关计划",
         phaseObjectiveCount: request.template.phaseTitles.length,
         taskTitleCount: taskSlots.length,
         taskTitleRules: [
@@ -172,7 +172,7 @@ export function createMimoAiProvider(options: MimoProviderOptions = {}): AiProvi
           { role: "system", content: systemPrompt },
           { role: "user", content: userPrompt }
         ],
-        max_completion_tokens: 2048,
+        max_completion_tokens: 8192,
         temperature: 0.4,
         top_p: 0.9,
         thinking: { type: "disabled" },

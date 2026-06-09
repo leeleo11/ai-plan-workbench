@@ -37,19 +37,19 @@
   --bg-pattern-2: rgba(59, 130, 246, 0.08);
   --bg-glow-1: rgba(59, 130, 246, 0.12);
   --bg-glow-2: rgba(99, 102, 241, 0.08);
-  --foreground: #9ca3af;
-  --ink: #e5e7eb;
-  --paper: rgba(31, 41, 55, 0.7);
-  --cream: rgba(55, 65, 81, 0.5);
-  --sun: rgba(59, 130, 246, 0.9);
-  --orange: rgba(139, 92, 246, 0.9);
-  --peach: rgba(99, 102, 241, 0.9);
-  --mint: rgba(16, 185, 129, 0.9);
-  --sky: rgba(14, 165, 233, 0.9);
-  --berry: rgba(6, 182, 212, 0.9);
-  --line: rgba(75, 85, 99, 0.4);
-  --glass-bg: rgba(31, 41, 55, 0.6);
-  --glass-border: rgba(75, 85, 99, 0.4);
+  --foreground: #d1d5db;
+  --ink: #f9fafb;
+  --paper: rgba(31, 41, 55, 0.9);
+  --cream: rgba(55, 65, 81, 0.8);
+  --sun: rgba(59, 130, 246, 0.95);
+  --orange: rgba(139, 92, 246, 0.95);
+  --peach: rgba(99, 102, 241, 0.95);
+  --mint: rgba(16, 185, 129, 0.95);
+  --sky: rgba(14, 165, 233, 0.95);
+  --berry: rgba(6, 182, 212, 0.95);
+  --line: rgba(148, 163, 184, 0.3);
+  --glass-bg: rgba(31, 41, 55, 0.85);
+  --glass-border: rgba(148, 163, 184, 0.3);
   --glass-shadow: 0 0 12px rgba(59, 130, 246, 0.08);
 
   /* Semantic colors */
@@ -67,19 +67,19 @@
   --bg-pattern-2: rgba(255, 255, 255, 0.05);
   --bg-glow-1: rgba(129, 140, 248, 0.12);
   --bg-glow-2: rgba(167, 139, 250, 0.08);
-  --foreground: #cbd5e1;
-  --ink: #f1f5f9;
-  --paper: rgba(15, 23, 42, 0.6);
-  --cream: rgba(30, 41, 59, 0.5);
-  --sun: rgba(129, 140, 248, 0.9);
-  --orange: rgba(167, 139, 250, 0.9);
-  --peach: rgba(192, 132, 252, 0.9);
-  --mint: rgba(52, 211, 153, 0.9);
-  --sky: rgba(96, 165, 250, 0.9);
-  --berry: rgba(244, 114, 182, 0.9);
-  --line: rgba(100, 116, 139, 0.3);
-  --glass-bg: rgba(15, 23, 42, 0.5);
-  --glass-border: rgba(100, 116, 139, 0.3);
+  --foreground: #e2e8f0;
+  --ink: #ffffff;
+  --paper: rgba(15, 23, 42, 0.9);
+  --cream: rgba(30, 41, 59, 0.8);
+  --sun: rgba(129, 140, 248, 0.95);
+  --orange: rgba(167, 139, 250, 0.95);
+  --peach: rgba(192, 132, 252, 0.95);
+  --mint: rgba(52, 211, 153, 0.95);
+  --sky: rgba(96, 165, 250, 0.95);
+  --berry: rgba(244, 114, 182, 0.95);
+  --line: rgba(148, 163, 184, 0.25);
+  --glass-bg: rgba(15, 23, 42, 0.85);
+  --glass-border: rgba(148, 163, 184, 0.25);
   --glass-shadow: 0 0 16px rgba(129, 140, 248, 0.1);
 
   /* Semantic colors */
@@ -160,4 +160,136 @@ select {
   backdrop-filter: blur(5px);
   border: 1px solid var(--glass-border);
   border-radius: 8px;
+}
+
+/* ========== 动态效果 ========== */
+
+/* 柔和浮动效果 */
+@keyframes float-gentle {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+/* 渐入效果 */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 成功脉冲效果 */
+@keyframes success-pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+/* 闪烁效果 */
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+/* 呼吸效果 */
+@keyframes breathe {
+  0%, 100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* 旋转效果（柔和） */
+@keyframes rotate-gentle {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* 工具类 */
+.animate-float-gentle {
+  animation: float-gentle 3s ease-in-out infinite;
+}
+
+.animate-fade-in {
+  animation: fade-in 0.4s ease-out forwards;
+}
+
+.animate-success {
+  animation: success-pulse 0.6s ease-out;
+}
+
+.animate-shimmer {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.1) 50%,
+    transparent 100%
+  );
+  background-size: 1000px 100%;
+  animation: shimmer 2s infinite;
+}
+
+.animate-breathe {
+  animation: breathe 3s ease-in-out infinite;
+}
+
+.animate-rotate-gentle {
+  animation: rotate-gentle 20s linear infinite;
+}
+
+/* 页面加载时的渐显效果 */
+.stagger-fade-in > * {
+  animation: fade-in 0.5s ease-out forwards;
+  opacity: 0;
+}
+
+.stagger-fade-in > *:nth-child(1) { animation-delay: 0.05s; }
+.stagger-fade-in > *:nth-child(2) { animation-delay: 0.1s; }
+.stagger-fade-in > *:nth-child(3) { animation-delay: 0.15s; }
+.stagger-fade-in > *:nth-child(4) { animation-delay: 0.2s; }
+.stagger-fade-in > *:nth-child(5) { animation-delay: 0.25s; }
+.stagger-fade-in > *:nth-child(6) { animation-delay: 0.3s; }
+
+/* 移动端触摸反馈 */
+@media (max-width: 768px) {
+  .comic-border {
+    border-radius: 12px;
+  }
+
+  button, [role="button"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .card-interactive:active {
+    opacity: 0.9;
+    transform: scale(0.98);
+  }
+
+  button:active {
+    transform: scale(0.95);
+  }
 }

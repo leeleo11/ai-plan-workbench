@@ -1,0 +1,11 @@
+{
+  "name": "@ai-plan/shared",
+  "version": "0.1.0",
+  "private": true,
+  "main": "index.ts",
+  "types": "index.ts",
+  "dependencies": {
+    "zod": "^4.4.3",
+    "date-fns": "^4.4.0"
+  }
+}

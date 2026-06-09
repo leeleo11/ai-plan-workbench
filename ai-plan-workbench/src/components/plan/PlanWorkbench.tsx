@@ -14,6 +14,8 @@ import { RiskPanel } from "./RiskPanel";
 import { TaskEditor } from "./TaskEditor";
 import { OptimizationPanel } from "./OptimizationPanel";
 import { Button } from "@/components/ui/Button";
+import { ThemeSwitcher } from "@/components/ui/ThemeSwitcher";
+import { DeskPet } from "@/components/ui/DeskPet";
 
 type PlanWorkbenchProps = {
   initialPlan: Plan;
@@ -33,6 +35,7 @@ export function PlanWorkbench({ initialPlan, onRestart }: PlanWorkbenchProps) {
   const [tab, setTab] = useState<WorkbenchTab>("timeline");
   const [selectedTask, setSelectedTask] = useState<PlanTask | null>(null);
   const [suggestedInstruction, setSuggestedInstruction] = useState<string | undefined>();
+  const [petMessage, setPetMessage] = useState<string | null>(null);
   const stats = getExecutionStats(plan);
   const nextTask = plan.tasks.find((task) => task.status !== "done");
 
@@ -51,6 +54,46 @@ export function PlanWorkbench({ initialPlan, onRestart }: PlanWorkbenchProps) {
     setSelectedTask(task);
   }
 
+  function addTask(date: string) {
+    const newTask: PlanTask = {
+      id: `user-${Date.now()}`,
+      title: "新任务卡",
+      date,
+      durationMinutes: plan.goal.dailyAvailableMinutes || 30,
+      category: "practice",
+      priority: "medium",
+      status: "todo",
+      dependsOn: [],
+      source: "user_edited"
+    };
+    const nextPlan = {
+      ...plan,
+      tasks: [...plan.tasks, newTask]
+    };
+    commitPlan("添加任务", nextPlan);
+    setSelectedTask(newTask);
+    setTab("calendar");
+    
+    setPetMessage("新任务帮你记下来啦！");
+    setTimeout(() => setPetMessage(null), 3000);
+  }
+
+  function moveTask(taskId: string, newDate: string) {
+    const task = plan.tasks.find((t) => t.id === taskId);
+    if (!task || task.date === newDate) return;
+    
+    const nextPlan = {
+      ...plan,
+      tasks: plan.tasks.map((t) =>
+        t.id === taskId ? { ...t, date: newDate, source: "user_edited" as const } : t
+      )
+    };
+    commitPlan("修改任务日期", nextPlan);
+    if (selectedTask?.id === taskId) {
+      setSelectedTask(nextPlan.tasks.find((t) => t.id === taskId) || null);
+    }
+  }
+
   function toggleTaskStatus(task: PlanTask) {
     const nextStatus = task.status === "done" ? "todo" : "done";
     const updatedTask: PlanTask = {
@@ -64,6 +107,13 @@ export function PlanWorkbench({ initialPlan, onRestart }: PlanWorkbenchProps) {
     };
     commitPlan(nextStatus === "done" ? "打卡通关" : "撤销打卡", nextPlan);
     if (selectedTask?.id === task.id) setSelectedTask(updatedTask);
+    
+    if (nextStatus === "done") {
+      setPetMessage(`太棒啦！完成了 ${task.title} 🎉`);
+    } else {
+      setPetMessage("已撤销打卡，继续加油哦~");
+    }
+    setTimeout(() => setPetMessage(null), 3000);
   }
 
   function undo() {
@@ -88,14 +138,18 @@ export function PlanWorkbench({ initialPlan, onRestart }: PlanWorkbenchProps) {
   }
 
   return (
-    <section className="mx-auto grid max-w-7xl gap-5">
-      <header className="comic-border rounded-lg bg-white p-5">
+    <section className="mx-auto grid max-w-7xl gap-5 stagger-fade-in">
+      <DeskPet message={petMessage} />
+      <header className="comic-border rounded-lg p-5">
+        <div className="flex justify-between items-start mb-4">
+          <p className="inline-flex rounded-full border-2 border-[var(--line)] bg-[var(--mint)] px-3 py-1 text-xs font-black animate-shimmer">
+            计划生成成功，今日开局
+          </p>
+          <ThemeSwitcher />
+        </div>
         <div className="grid gap-5 lg:grid-cols-[1fr_340px] lg:items-stretch">
           <div className="min-w-0">
-            <p className="inline-flex rounded-full border-2 border-[var(--line)] bg-[var(--mint)] px-3 py-1 text-xs font-black">
-              计划生成成功，今日开局
-            </p>
-            <h1 className="marker-title mt-3 text-3xl font-black leading-tight text-[var(--ink)] lg:text-4xl">
+            <h1 className="marker-title mt-1 text-3xl font-black leading-tight text-[var(--ink)] lg:text-4xl">
               {plan.goal.title}
             </h1>
             <div className="mt-4 flex flex-wrap gap-2 text-sm font-black text-[var(--ink)]">
@@ -119,11 +173,11 @@ export function PlanWorkbench({ initialPlan, onRestart }: PlanWorkbenchProps) {
               </span>
             </div>
             <div className="mt-4 h-4 overflow-hidden rounded-full border-2 border-[var(--line)] bg-[var(--cream)]">
-              <div className="h-full bg-[var(--berry)] transition-all" style={{ width: `${stats.progress}%` }} />
+              <div className="h-full bg-[var(--berry)] transition-all duration-500 ease-out" style={{ width: `${stats.progress}%` }} />
             </div>
           </div>
 
-          <div className="rounded-lg border-2 border-[var(--line)] bg-[var(--paper)] p-4 shadow-[3px_3px_0_var(--line)]">
+          <div className="rounded-lg border border-[var(--glass-border)] bg-white/40 p-4 shadow-[3px_3px_0_var(--glass-border)] backdrop-blur-md">
             <p className="text-xs font-black text-[var(--berry)]">下一张任务卡</p>
             <p className="mt-2 text-sm font-black leading-6 text-[var(--ink)]">
               {nextTask ? nextTask.title : "今天的关卡都通关了，可以去老师批注里复盘一下。"}
@@ -148,7 +202,7 @@ export function PlanWorkbench({ initialPlan, onRestart }: PlanWorkbenchProps) {
         </div>
       </header>
 
-      <section className="comic-border-soft rounded-lg bg-[var(--paper)] p-5">
+      <section className="comic-border-soft rounded-lg p-5">
         <div className="grid gap-4 lg:grid-cols-[1.3fr_0.7fr]">
           <div>
             <p className="inline-flex rounded-full border-2 border-[var(--line)] bg-[var(--sun)] px-3 py-1 text-xs font-black">
@@ -210,7 +264,7 @@ export function PlanWorkbench({ initialPlan, onRestart }: PlanWorkbenchProps) {
           {tab === "timeline" ? (
             <TimelineView plan={plan} onSelectTask={setSelectedTask} onToggleTaskStatus={toggleTaskStatus} />
           ) : null}
-          {tab === "calendar" ? <CalendarView plan={plan} onSelectTask={setSelectedTask} /> : null}
+          {tab === "calendar" ? <CalendarView plan={plan} onSelectTask={setSelectedTask} onAddTask={addTask} onMoveTask={moveTask} /> : null}
           {tab === "risks" ? (
             <RiskPanel
               plan={plan}

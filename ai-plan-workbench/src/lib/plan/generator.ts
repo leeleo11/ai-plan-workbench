@@ -12,7 +12,7 @@ export type GeneratePlanInput = {
 
 export async function generatePlanFromGoal({ input, provider }: GeneratePlanInput): Promise<{ plan: Plan }> {
   const parsed = parseGoalInput(input);
-  const template = selectTemplate(parsed);
+  const template = selectTemplate(parsed.goalCategory);
   const draft = await provider.generatePlan({ parsed, template });
   const planWithSources = {
     ...draft,

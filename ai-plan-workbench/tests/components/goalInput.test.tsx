@@ -14,24 +14,24 @@ describe("GoalInput", () => {
     render(<GoalInput onGenerated={vi.fn()} />);
 
     await userEvent.clear(screen.getByLabelText("大目标"));
-    await userEvent.type(screen.getByLabelText("大目标"), "备考雅思");
+    await userEvent.type(screen.getByLabelText("大目标"), "学会 Python 数据分析");
     await userEvent.clear(screen.getByLabelText("开始日期"));
     await userEvent.type(screen.getByLabelText("开始日期"), "2026-06-08");
     await userEvent.clear(screen.getByLabelText("计划天数"));
     await userEvent.type(screen.getByLabelText("计划天数"), "60");
     await userEvent.clear(screen.getByLabelText("当前水平"));
-    await userEvent.type(screen.getByLabelText("当前水平"), "5.5");
+    await userEvent.type(screen.getByLabelText("当前水平"), "会一点基础语法");
     await userEvent.clear(screen.getByLabelText("目标水平"));
-    await userEvent.type(screen.getByLabelText("目标水平"), "7.0");
-    await userEvent.clear(screen.getByLabelText("每天学习小时"));
-    await userEvent.type(screen.getByLabelText("每天学习小时"), "2");
+    await userEvent.type(screen.getByLabelText("目标水平"), "能独立完成项目");
+    await userEvent.clear(screen.getByLabelText("每天投入小时"));
+    await userEvent.type(screen.getByLabelText("每天投入小时"), "2");
     await userEvent.click(screen.getByRole("button", { name: "生成我的闯关计划" }));
 
     const body = JSON.parse(String(fetchMock.mock.calls[0][1]?.body));
     expect(body.input).toContain("2026-06-08开始");
     expect(body.input).toContain("60天");
-    expect(body.input).toContain("从5.5到7.0");
-    expect(body.input).toContain("每天学习2小时");
+    expect(body.input).toContain("从会一点基础语法到能独立完成项目");
+    expect(body.input).toContain("每天投入2小时");
   });
 
   it("notifies parent when generation fails so loading screen can close", async () => {
@@ -39,7 +39,7 @@ describe("GoalInput", () => {
       "fetch",
       vi.fn(async () => ({
         ok: false,
-        json: async () => ({ error: "MiMo request timeout" })
+        json: async () => ({ error: "request timeout" })
       }))
     );
     const onGenerateEnd = vi.fn();

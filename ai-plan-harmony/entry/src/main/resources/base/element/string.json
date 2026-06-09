@@ -1,0 +1,16 @@
+{
+  "string": [
+    {
+      "name": "module_desc",
+      "value": "AI 计划工作台 - 鸿蒙版"
+    },
+    {
+      "name": "ability_desc",
+      "value": "AI 计划工作台主页面"
+    },
+    {
+      "name": "app_name",
+      "value": "AI 计划工作台"
+    }
+  ]
+}

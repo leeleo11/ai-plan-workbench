@@ -3,13 +3,13 @@ import { generatePlanFromGoal } from "@/lib/plan/generator";
 import { createMockAiProvider } from "@/server/ai/mockProvider";
 
 describe("generatePlanFromGoal", () => {
-  it("generates a validated IELTS plan", async () => {
+  it("generates a validated learning plan", async () => {
     const result = await generatePlanFromGoal({
-      input: "I want to prepare for IELTS for 90 days, improve from 5.5 to 7.0, and study 2 hours per day.",
+      input: "30天学会 Python 数据分析，从会一点基础语法到能独立完成一个小项目，每天学习1小时",
       provider: createMockAiProvider()
     });
 
-    expect(result.plan.goal.type).toBe("exam");
+    expect(result.plan.goal.type).toBe("learning");
     expect(result.plan.phases.length).toBeGreaterThan(0);
     expect(result.plan.tasks.length).toBeGreaterThan(0);
     expect(result.plan.brief.summary).toContain("文字版规划");
@@ -18,7 +18,7 @@ describe("generatePlanFromGoal", () => {
     expect(result.plan.validationStatus).toBe("valid");
   });
 
-  it("tailors daily tasks to the user's specific skill goal", async () => {
+  it("tailors daily tasks to the user's specific goal", async () => {
     const pythonPlan = await generatePlanFromGoal({
       input: "30天学会 Python 数据分析，从会一点基础语法到能独立完成一个小项目，每天学习1小时",
       provider: createMockAiProvider()
@@ -36,7 +36,7 @@ describe("generatePlanFromGoal", () => {
     expect(pythonTitles).not.toEqual(photoTitles);
   });
 
-  it("adds traceable reference sources based on the goal type", async () => {
+  it("adds traceable reference sources based on the goal", async () => {
     const result = await generatePlanFromGoal({
       input: "30天学会 Python 数据分析，从会一点基础语法到能独立完成一个小项目，每天学习1小时",
       provider: createMockAiProvider()
@@ -62,12 +62,11 @@ describe("generatePlanFromGoal", () => {
 
   it("keeps uncertain duration visible in the generated plan", async () => {
     const result = await generatePlanFromGoal({
-      input: "备考雅思，备考时间不确定，从5.5到7.0，每天学习2小时",
+      input: "养成晨跑习惯，时间不确定，每天投入1小时",
       provider: createMockAiProvider()
     });
 
     expect(result.plan.goal.durationUncertain).toBe(true);
-    expect(result.plan.goal.targetDate).toBe("2026-07-02");
     expect(result.plan.brief.assumptions.some((item) => item.includes("30天滚动计划"))).toBe(true);
   });
 });

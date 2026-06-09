@@ -20,10 +20,10 @@ describe("planToMarkdown", () => {
       }
     });
 
-    expect(markdown).toContain("# 90-day IELTS plan to reach 7.0");
+    expect(markdown).toContain("# 30天学会 Python 数据分析");
     expect(markdown).toContain("https://docs.python.org/3/tutorial/");
-    expect(markdown).toContain("## Foundation");
-    expect(markdown).toContain("Memorize 80 core vocabulary words");
+    expect(markdown).toContain("## 入门补给站");
+    expect(markdown).toContain("学习 Python 数据分析的一个核心概念");
     expect(markdown).toContain("Review mistakes after finishing.");
   });
 });

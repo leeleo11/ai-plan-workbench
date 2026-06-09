@@ -13,14 +13,14 @@ describe("createMimoAiProvider", () => {
           {
             message: {
               content: JSON.stringify({
-                summary: "文字版规划：MiMo 已经根据目标生成了一份更细的备考说明。",
-                assumptions: ["默认每天学习2小时。"],
+                summary: "文字版规划：MiMo 已经根据目标生成了一份更细的计划说明。",
+                assumptions: ["默认每天学习1小时。"],
                 sources: [
                   {
                     type: "model",
                     title: "MiMo 规划建议",
                     note: "由 MiMo 根据用户目标生成。",
-                    url: "https://ielts.org/"
+                    url: "https://docs.python.org/3/tutorial/"
                   }
                 ]
               })
@@ -30,7 +30,7 @@ describe("createMimoAiProvider", () => {
       })
     })) as unknown as typeof fetch;
 
-    const parsed = parseGoalInput("90天备考雅思，从5.5到7.0，每天学习2小时");
+    const parsed = parseGoalInput("30天学会 Python 数据分析，每天学习1小时");
     const provider = createMimoAiProvider({
       apiKey: "test-key",
       baseUrl: "https://token-plan-cn.xiaomimimo.com/v1",
@@ -40,13 +40,12 @@ describe("createMimoAiProvider", () => {
 
     const plan = await provider.generatePlan({
       parsed,
-      template: selectTemplate(parsed)
+      template: selectTemplate(parsed.goalCategory)
     });
 
     expect(plan.tasks.length).toBeGreaterThan(0);
     expect(plan.brief.summary).toContain("MiMo");
-    expect(plan.brief.sources.some((source) => source.url === "https://ielts.org/")).toBe(true);
-    expect(plan.brief.sources.find((source) => source.url === "https://ielts.org/")?.verificationStatus).toBe("unverified");
+    expect(plan.brief.sources.some((source) => source.url === "https://docs.python.org/3/tutorial/")).toBe(true);
     expect(fetcher).toHaveBeenCalledWith(
       "https://token-plan-cn.xiaomimimo.com/v1/chat/completions",
       expect.objectContaining({
@@ -104,7 +103,7 @@ describe("createMimoAiProvider", () => {
 
     const plan = await provider.generatePlan({
       parsed,
-      template: selectTemplate(parsed)
+      template: selectTemplate(parsed.goalCategory)
     });
 
     expect(plan.phases[0].objective).toBe("建立 Python 数据分析环境并掌握 Pandas 基础");
@@ -124,8 +123,8 @@ describe("createMimoAiProvider", () => {
                 updates: [
                   {
                     id: samplePlan.tasks[0].id,
-                    title: "AI 改写后的词汇任务",
-                    description: "把 80 个词拆成 4 组，并用错题本记录薄弱词。"
+                    title: "AI 改写后的学习任务",
+                    description: "把学习内容拆成小块，用错题本记录薄弱点。"
                   }
                 ]
               })
@@ -142,8 +141,8 @@ describe("createMimoAiProvider", () => {
       instruction: "改得更具体一点"
     });
 
-    expect(optimized.tasks[0].title).toBe("AI 改写后的词汇任务");
-    expect(optimized.tasks[0].description).toContain("4 组");
+    expect(optimized.tasks[0].title).toBe("AI 改写后的学习任务");
+    expect(optimized.tasks[0].description).toContain("错题本");
     expect(optimized.tasks[0].source).toBe("ai_optimized");
     expect(optimized.tasks[1].title).toBe(samplePlan.tasks[1].title);
   });

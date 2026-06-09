@@ -1,0 +1,9 @@
+{
+  "src": [
+    "pages/Index",
+    "pages/Plan",
+    "pages/Generate",
+    "pages/Review",
+    "pages/TaskDetail"
+  ]
+}

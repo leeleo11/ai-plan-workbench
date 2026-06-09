@@ -5,8 +5,8 @@ import { samplePlan } from "@/lib/plan/fixtures";
 describe("PlanSchema", () => {
   it("accepts a valid structured plan", () => {
     const parsed = PlanSchema.parse(samplePlan);
-    expect(parsed.goal.title).toBe("90-day IELTS plan to reach 7.0");
-    expect(parsed.brief.summary).toContain("90天");
+    expect(parsed.goal.title).toBe("30天学会 Python 数据分析");
+    expect(parsed.brief.summary).toContain("30天");
     expect(parsed.tasks[0].status).toBe("todo");
   });
 
@@ -27,16 +27,16 @@ describe("PlanSchema", () => {
         sources: [
           {
             type: "retrieval",
-            title: "Official IELTS preparation page",
+            title: "Python official tutorial",
             note: "Used as a planning reference.",
-            url: "https://ielts.org/",
+            url: "https://docs.python.org/3/tutorial/",
             verificationStatus: "trusted"
           }
         ]
       }
     });
 
-    expect(parsed.brief.sources[0].url).toBe("https://ielts.org/");
+    expect(parsed.brief.sources[0].url).toBe("https://docs.python.org/3/tutorial/");
     expect(parsed.brief.sources[0].verificationStatus).toBe("trusted");
   });
 

@@ -16,11 +16,11 @@ describe("assessPlanQuality", () => {
   it("lowers the score when daily workload exceeds available time", () => {
     const overloaded = {
       ...samplePlan,
-      goal: { ...samplePlan.goal, dailyAvailableMinutes: 60 },
+      goal: { ...samplePlan.goal, dailyAvailableMinutes: 30 },
       risks: [
         {
           type: "daily_capacity",
-          message: "2026-06-01 exceeds available study time.",
+          message: "2026-06-01 超出每日可用时间。",
           severity: "medium" as const,
           relatedTaskIds: samplePlan.tasks.map((task) => task.id)
         }
