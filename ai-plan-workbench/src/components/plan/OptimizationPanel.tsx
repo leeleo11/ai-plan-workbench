@@ -10,10 +10,11 @@ type OptimizationPanelProps = {
   plan: Plan;
   selectedTask: PlanTask | null;
   onApply: (plan: Plan) => void;
+  initialInstruction?: string;
 };
 
-export function OptimizationPanel({ plan, selectedTask, onApply }: OptimizationPanelProps) {
-  const [instruction, setInstruction] = useState("让这个任务更具体、更容易执行。");
+export function OptimizationPanel({ plan, selectedTask, onApply, initialInstruction }: OptimizationPanelProps) {
+  const [instruction, setInstruction] = useState(initialInstruction ?? "把这张任务卡改得更具体一点，并降低一点压力。");
   const [previewPlan, setPreviewPlan] = useState<Plan | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -37,21 +38,25 @@ export function OptimizationPanel({ plan, selectedTask, onApply }: OptimizationP
   const diff = previewPlan ? summarizePlanDiff(plan, previewPlan) : null;
 
   return (
-    <section className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-      <h2 className="text-sm font-semibold text-slate-950">AI 局部优化</h2>
-      <p className="mt-1 text-xs text-slate-500">
-        选择任务后，可以让 AI 调整任务内容，预览变更后再应用。
+    <section className="comic-border-soft rounded-lg bg-white p-4">
+      <h2 className="text-base font-black text-[var(--ink)]">同桌帮你改</h2>
+      <p className="mt-1 text-xs font-semibold leading-5 text-stone-600">
+        选中一张任务卡，再告诉 AI 你想怎么改。先预览，不会偷偷覆盖计划。
       </p>
-      <Textarea className="mt-3 min-h-16 text-sm" value={instruction} onChange={(event) => setInstruction(event.target.value)} />
+      <Textarea
+        className="mt-3 min-h-20 text-sm"
+        value={instruction}
+        onChange={(event) => setInstruction(event.target.value)}
+      />
       <Button className="mt-3 w-full" onClick={preview} disabled={!selectedTask || isLoading}>
-        {isLoading ? "正在预览..." : "预览变更"}
+        {isLoading ? "正在打草稿..." : "预览修改"}
       </Button>
       {diff ? (
-        <div className="mt-3 rounded-lg bg-teal-50 p-3 text-sm text-teal-900">
-          <p className="font-medium">变更预览</p>
+        <div className="mt-3 rounded-lg border-2 border-[var(--line)] bg-[var(--mint)] p-3 text-sm font-bold text-[var(--ink)]">
+          <p className="font-black">修改预览</p>
           <p className="mt-1 text-xs">{diff.summary}</p>
-          <Button className="mt-3 w-full" onClick={() => previewPlan && onApply(previewPlan)}>
-            应用变更
+          <Button className="mt-3 w-full bg-[var(--peach)]" onClick={() => previewPlan && onApply(previewPlan)}>
+            应用这次修改
           </Button>
         </div>
       ) : null}

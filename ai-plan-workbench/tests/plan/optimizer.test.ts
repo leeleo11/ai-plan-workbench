@@ -12,6 +12,6 @@ describe("summarizePlanDiff", () => {
     const diff = summarizePlanDiff(samplePlan, next);
 
     expect(diff.changedTasks).toBe(1);
-    expect(diff.summary).toContain("1 task changed");
+    expect(diff.summary).toContain("改动 1 张任务卡");
   });
 });

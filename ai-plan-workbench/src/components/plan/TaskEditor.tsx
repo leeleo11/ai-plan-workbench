@@ -14,7 +14,7 @@ const categoryLabel: Record<string, string> = {
   writing: "写作",
   speaking: "口语",
   mock_test: "模考",
-  review: "复习",
+  review: "复盘",
   grammar: "语法",
   translation: "翻译",
   past_paper: "真题",
@@ -26,40 +26,52 @@ const categoryLabel: Record<string, string> = {
 export function TaskEditor({ task, onChange, onClose }: TaskEditorProps) {
   if (!task) {
     return (
-      <aside className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-        <p className="text-sm text-slate-400">点击任务卡片进行编辑</p>
+      <aside className="comic-border-soft rounded-lg bg-white p-4">
+        <h2 className="text-base font-black text-[var(--ink)]">任务小纸条</h2>
+        <p className="mt-2 text-sm font-semibold leading-6 text-stone-600">
+          点左边任意一张任务卡，这里就能改标题、日期、时长和状态。
+        </p>
       </aside>
     );
   }
 
   return (
-    <aside className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-      <div className="flex items-center justify-between">
-        <h2 className="text-sm font-semibold text-slate-950">编辑任务</h2>
-        <button className="text-sm text-slate-400 hover:text-slate-600" onClick={onClose}>关闭</button>
+    <aside className="comic-border-soft rounded-lg bg-white p-4">
+      <div className="flex items-center justify-between gap-3">
+        <h2 className="text-base font-black text-[var(--ink)]">改这张任务卡</h2>
+        <button className="text-sm font-black text-stone-500 hover:text-[var(--berry)]" onClick={onClose}>
+          收起
+        </button>
       </div>
 
-      <label className="mt-4 block text-xs font-medium text-slate-500">任务名称</label>
+      <label className="mt-4 block text-xs font-black text-stone-600">关卡名称</label>
       <input
-        className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-teal-500 focus:outline-none"
+        className="mt-1 w-full rounded-lg border-2 border-[var(--line)] bg-[var(--paper)] px-3 py-2 text-sm font-bold text-[var(--ink)] outline-none focus:bg-white"
         value={task.title}
         onChange={(event) => onChange({ ...task, title: event.target.value, source: "user_edited" })}
       />
 
+      <label className="mt-3 block text-xs font-black text-stone-600">任务说明</label>
+      <textarea
+        className="mt-1 min-h-24 w-full rounded-lg border-2 border-[var(--line)] bg-[var(--paper)] px-3 py-2 text-sm font-bold text-[var(--ink)] outline-none focus:bg-white"
+        value={task.description ?? ""}
+        onChange={(event) => onChange({ ...task, description: event.target.value || undefined, source: "user_edited" })}
+      />
+
       <div className="mt-3 grid grid-cols-2 gap-3">
         <div>
-          <label className="block text-xs font-medium text-slate-500">日期</label>
+          <label className="block text-xs font-black text-stone-600">挑战日期</label>
           <input
-            className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-teal-500 focus:outline-none"
+            className="mt-1 w-full rounded-lg border-2 border-[var(--line)] bg-[var(--paper)] px-3 py-2 text-sm font-bold outline-none focus:bg-white"
             type="date"
             value={task.date}
             onChange={(event) => onChange({ ...task, date: event.target.value, source: "user_edited" })}
           />
         </div>
         <div>
-          <label className="block text-xs font-medium text-slate-500">时长（分钟）</label>
+          <label className="block text-xs font-black text-stone-600">预计用时</label>
           <input
-            className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-teal-500 focus:outline-none"
+            className="mt-1 w-full rounded-lg border-2 border-[var(--line)] bg-[var(--paper)] px-3 py-2 text-sm font-bold outline-none focus:bg-white"
             type="number"
             value={task.durationMinutes}
             onChange={(event) => onChange({ ...task, durationMinutes: Number(event.target.value), source: "user_edited" })}
@@ -69,27 +81,29 @@ export function TaskEditor({ task, onChange, onClose }: TaskEditorProps) {
 
       <div className="mt-3 grid grid-cols-2 gap-3">
         <div>
-          <label className="block text-xs font-medium text-slate-500">类别</label>
-          <span className="mt-1 inline-block rounded-full bg-slate-100 px-2 py-1 text-xs text-slate-600">
+          <label className="block text-xs font-black text-stone-600">任务类型</label>
+          <span className="mt-1 inline-flex rounded-full border-2 border-[var(--line)] bg-[var(--mint)] px-3 py-1 text-xs font-black">
             {categoryLabel[task.category] ?? task.category}
           </span>
         </div>
         <div>
-          <label className="block text-xs font-medium text-slate-500">状态</label>
+          <label className="block text-xs font-black text-stone-600">当前状态</label>
           <select
-            className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-teal-500 focus:outline-none"
+            className="mt-1 w-full rounded-lg border-2 border-[var(--line)] bg-[var(--paper)] px-3 py-2 text-sm font-bold outline-none focus:bg-white"
             value={task.status}
             onChange={(event) => onChange({ ...task, status: event.target.value as PlanTask["status"], source: "user_edited" })}
           >
-            <option value="todo">待完成</option>
-            <option value="done">已完成</option>
-            <option value="skipped">已跳过</option>
-            <option value="delayed">已延期</option>
+            <option value="todo">待挑战</option>
+            <option value="done">已通关</option>
+            <option value="skipped">先跳过</option>
+            <option value="delayed">延期中</option>
           </select>
         </div>
       </div>
 
-      <Button className="mt-4 w-full" onClick={onClose}>完成编辑</Button>
+      <Button className="mt-4 w-full" onClick={onClose}>
+        保存这张卡
+      </Button>
     </aside>
   );
 }

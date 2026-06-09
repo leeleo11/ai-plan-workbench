@@ -9,10 +9,15 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "input is required" }, { status: 400 });
   }
 
-  const result = await generatePlanFromGoal({
-    input: body.input,
-    provider: createAiProvider()
-  });
+  try {
+    const result = await generatePlanFromGoal({
+      input: body.input,
+      provider: createAiProvider()
+    });
 
-  return NextResponse.json(result);
+    return NextResponse.json(result);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Plan generation failed";
+    return NextResponse.json({ error: message }, { status: 502 });
+  }
 }

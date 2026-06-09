@@ -23,6 +23,6 @@ export function summarizePlanDiff(previous: Plan, next: Plan): PlanDiffSummary {
     changedTasks,
     addedTasks,
     removedTasks,
-    summary: `${changedTasks} task changed, ${addedTasks} added, ${removedTasks} removed.`
+    summary: `改动 ${changedTasks} 张任务卡，新增 ${addedTasks} 张，移除 ${removedTasks} 张。`
   };
 }

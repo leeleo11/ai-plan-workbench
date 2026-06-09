@@ -15,6 +15,7 @@ describe("POST /api/plans/generate", () => {
 
     expect(response.status).toBe(200);
     expect(json.plan.goal.type).toBe("exam");
+    expect(json.plan.brief.summary).toContain("文字版规划");
     expect(json.plan.tasks.length).toBeGreaterThan(0);
   });
 });

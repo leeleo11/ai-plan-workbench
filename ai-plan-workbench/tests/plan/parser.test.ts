@@ -14,6 +14,20 @@ describe("parseGoalInput", () => {
     expect(parsed.dailyAvailableMinutes).toBe(120);
   });
 
+  it("extracts an explicit start date when provided", () => {
+    const parsed = parseGoalInput("2026-06-08开始，30天学会 Python 数据分析，每天学习1小时");
+
+    expect(parsed.startDate).toBe("2026-06-08");
+    expect(parsed.durationDays).toBe(30);
+  });
+
+  it("supports uncertain planning duration as a rolling plan", () => {
+    const parsed = parseGoalInput("备考雅思，备考时间不确定，每天学习2小时");
+
+    expect(parsed.durationUncertain).toBe(true);
+    expect(parsed.durationDays).toBe(30);
+  });
+
   it("falls back to skill learning when no exam keyword is present", () => {
     const parsed = parseGoalInput("Learn Python data analysis in 30 days, one hour every day.");
     const template = selectTemplate(parsed);

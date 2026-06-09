@@ -1,4 +1,5 @@
 import { parseGoalInput } from "./parser";
+import { getReferenceSources, mergePlanSources } from "./referenceSources";
 import { selectTemplate } from "./templates";
 import { validatePlan } from "./validator";
 import type { Plan } from "./schema";
@@ -13,11 +14,18 @@ export async function generatePlanFromGoal({ input, provider }: GeneratePlanInpu
   const parsed = parseGoalInput(input);
   const template = selectTemplate(parsed);
   const draft = await provider.generatePlan({ parsed, template });
-  const validation = validatePlan(draft);
+  const planWithSources = {
+    ...draft,
+    brief: {
+      ...draft.brief,
+      sources: mergePlanSources(draft.brief.sources, getReferenceSources(parsed))
+    }
+  };
+  const validation = validatePlan(planWithSources);
 
   return {
     plan: {
-      ...draft,
+      ...planWithSources,
       validationStatus: validation.status,
       risks: validation.risks
     }

@@ -18,3 +18,7 @@ export function savePlan(plan: Plan): void {
   const existing = listPlans().filter((item) => item.id !== plan.id);
   window.localStorage.setItem(key, JSON.stringify([plan, ...existing]));
 }
+
+export function getLatestPlan(): Plan | null {
+  return listPlans()[0] ?? null;
+}
