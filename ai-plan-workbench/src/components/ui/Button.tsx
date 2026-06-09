@@ -5,7 +5,7 @@ type ButtonProps = PropsWithChildren<ButtonHTMLAttributes<HTMLButtonElement>>;
 export function Button({ children, className = "", ...props }: ButtonProps) {
   return (
     <button
-      className={`inline-flex items-center justify-center rounded-lg border-2 border-[var(--line)] bg-[var(--sun)] px-4 py-2 text-sm font-black text-[var(--ink)] shadow-[3px_3px_0_var(--line)] transition hover:-translate-y-0.5 hover:bg-[var(--orange)] hover:shadow-[5px_5px_0_var(--line)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0_var(--line)] disabled:cursor-not-allowed disabled:opacity-50 ${className}`}
+      className={`inline-flex items-center justify-center rounded-lg border border-black/10 bg-[var(--color-primary)] px-4 py-2.5 text-sm font-semibold text-[var(--ink)] shadow-sm transition-all duration-200 ease-out hover:-translate-y-0.5 hover:shadow-md hover:brightness-95 active:translate-y-0 active:shadow-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-primary)] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0 ${className}`}
       {...props}
     >
       {children}

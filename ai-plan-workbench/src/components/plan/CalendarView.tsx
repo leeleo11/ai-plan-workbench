@@ -1,6 +1,16 @@
 import type { Plan, PlanTask } from "@/lib/plan/schema";
 
-export function CalendarView({ plan, onSelectTask }: { plan: Plan; onSelectTask: (task: PlanTask) => void }) {
+export function CalendarView({
+  plan,
+  onSelectTask,
+  onAddTask,
+  onMoveTask
+}: {
+  plan: Plan;
+  onSelectTask: (task: PlanTask) => void;
+  onAddTask?: (date: string) => void;
+  onMoveTask?: (taskId: string, newDate: string) => void;
+}) {
   const tasksByDate = plan.tasks.reduce<Record<string, PlanTask[]>>((acc, task) => {
     acc[task.date] = [...(acc[task.date] ?? []), task];
     return acc;
@@ -26,44 +36,71 @@ export function CalendarView({ plan, onSelectTask }: { plan: Plan; onSelectTask:
   const weekDays = ["一", "二", "三", "四", "五", "六", "日"];
 
   return (
-    <div className="comic-border-soft rounded-lg bg-white p-4">
-      <h2 className="text-base font-black text-[var(--ink)]">打卡日历</h2>
-      <p className="mb-4 mt-1 text-xs font-semibold text-stone-600">把每天的小关卡贴到日历上，完成感会更强。</p>
-      <div className="mb-2 grid grid-cols-7 gap-1 text-center text-xs font-black text-[var(--ink)]">
+    <div className="comic-border-soft rounded-lg p-5">
+      <h2 className="text-lg font-bold text-[var(--ink)]">打卡日历</h2>
+      <p className="mb-5 mt-1 text-sm text-[var(--foreground)]">点击日期可添加规划，按住卡片可自由拖动到其他日期！</p>
+      <div className="mb-3 grid grid-cols-7 gap-2 text-center text-xs font-semibold text-[var(--foreground)]">
         {weekDays.map((day) => (
-          <div key={day} className="rounded-md border-2 border-[var(--line)] bg-[var(--sun)] py-1">
+          <div key={day} className="rounded-md bg-[var(--paper)] py-2">
             周{day}
           </div>
         ))}
       </div>
-      <div className="grid gap-1">
+      <div className="grid gap-2">
         {weeks.map((week, weekIndex) => (
-          <div key={weekIndex} className="grid grid-cols-7 gap-1">
+          <div key={weekIndex} className="grid grid-cols-7 gap-2">
             {week.map((date) => {
               const tasks = tasksByDate[date] ?? [];
-              const isInRange = dates.includes(date);
+              const isInRange = dates.includes(date) || (date >= startDate.toISOString().split("T")[0] && date <= plan.goal.targetDate);
+              
               return (
                 <div
                   key={date}
-                  className={`min-h-24 rounded-lg border-2 p-1.5 ${
-                    isInRange ? "border-[var(--line)] bg-[var(--paper)]" : "border-stone-200 bg-white/50"
+                  onClick={() => onAddTask && onAddTask(date)}
+                  onDragOver={(e) => {
+                    e.preventDefault();
+                    e.currentTarget.classList.add("ring-2", "ring-[var(--color-primary)]", "ring-opacity-50");
+                  }}
+                  onDragLeave={(e) => {
+                    e.currentTarget.classList.remove("ring-2", "ring-[var(--color-primary)]", "ring-opacity-50");
+                  }}
+                  onDrop={(e) => {
+                    e.preventDefault();
+                    e.currentTarget.classList.remove("ring-2", "ring-[var(--color-primary)]", "ring-opacity-50");
+                    const taskId = e.dataTransfer.getData("text/plain");
+                    if (taskId && onMoveTask) {
+                      onMoveTask(taskId, date);
+                    }
+                  }}
+                  className={`min-h-28 cursor-pointer rounded-lg border p-2.5 transition-all hover:shadow-sm ${
+                    isInRange
+                      ? "border-[var(--line)] bg-[var(--paper)]"
+                      : "border-transparent bg-[var(--paper)]/30 opacity-50"
                   }`}
                 >
-                  <div className={`text-xs font-black ${isInRange ? "text-[var(--ink)]" : "text-stone-300"}`}>
+                  <div className={`mb-2 text-xs font-semibold ${isInRange ? "text-[var(--ink)]" : "text-[var(--foreground)]/40"}`}>
                     {date.split("-")[2]}
                   </div>
-                  <div className="mt-1 grid gap-1">
+                  <div className="grid gap-1.5">
                     {tasks.slice(0, 3).map((task) => (
-                      <button
+                      <div
                         key={task.id}
-                        onClick={() => onSelectTask(task)}
-                        className="truncate rounded-md border border-[var(--line)] bg-[var(--mint)] px-1 py-0.5 text-left text-[10px] font-black text-[var(--ink)] hover:bg-[var(--sky)]"
+                        draggable
+                        onDragStart={(e) => {
+                          e.dataTransfer.setData("text/plain", task.id);
+                          e.stopPropagation();
+                        }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onSelectTask(task);
+                        }}
+                        className="cursor-move truncate rounded-md border border-[var(--color-success)]/30 bg-[var(--color-success)]/80 px-2 py-1 text-left text-[10px] font-medium text-[var(--ink)] shadow-sm transition-all hover:scale-[1.02] hover:shadow-md active:cursor-grabbing"
                       >
                         {task.title}
-                      </button>
+                      </div>
                     ))}
                     {tasks.length > 3 ? (
-                      <span className="text-[10px] font-black text-stone-500">还有 {tasks.length - 3} 张</span>
+                      <span className="text-[10px] font-medium text-[var(--foreground)]/60">还有 {tasks.length - 3} 张</span>
                     ) : null}
                   </div>
                 </div>

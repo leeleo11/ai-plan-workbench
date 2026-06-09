@@ -6,12 +6,14 @@ type TabsProps<T extends string> = {
 
 export function Tabs<T extends string>({ value, options, onChange }: TabsProps<T>) {
   return (
-    <div className="inline-flex rounded-lg border-2 border-[var(--line)] bg-white p-1 shadow-[3px_3px_0_var(--line)]">
+    <div className="inline-flex gap-1 rounded-lg bg-[var(--paper)] p-1">
       {options.map((option) => (
         <button
           key={option.value}
-          className={`rounded-md px-3 py-1.5 text-sm font-black transition ${
-            value === option.value ? "bg-[var(--sky)] text-[var(--ink)]" : "text-stone-600 hover:bg-[var(--cream)]"
+          className={`rounded-md px-5 py-2 text-sm font-semibold transition-all duration-200 ${
+            value === option.value
+            ? "bg-[var(--color-info)] text-[var(--ink)] shadow-sm scale-[1.02]"
+            : "text-[var(--foreground)] hover:bg-[var(--cream)] hover:text-[var(--ink)]"
           }`}
           onClick={() => onChange(option.value)}
         >
