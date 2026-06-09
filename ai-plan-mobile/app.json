@@ -41,9 +41,11 @@
       "expo-status-bar"
     ],
     "extra": {
+      "router": {},
       "eas": {
-        "projectId": "your-project-id-here"
+        "projectId": "e3e89440-11d4-423e-bd57-138ffb18a478"
       }
-    }
+    },
+    "owner": "brucelee54"
   }
 }

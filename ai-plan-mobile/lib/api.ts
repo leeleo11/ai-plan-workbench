@@ -4,7 +4,7 @@ import type { Plan } from './shared/schema';
 // 开发环境使用本地地址
 const API_BASE = __DEV__
   ? 'http://localhost:3000'  // 开发环境
-  : 'https://ai-plan-workbench.vercel.app';  // 生产环境（部署后修改为你的 Vercel URL）
+  : 'https://ai-plan-workbench.vercel.app';  // 生产环境
 
 export async function generatePlan(input: string): Promise<Plan> {
   const response = await fetch(`${API_BASE}/api/plans/generate`, {
