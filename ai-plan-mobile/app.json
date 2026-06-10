@@ -7,11 +7,6 @@
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
     "scheme": "ai-plan",
-    "splash": {
-      "image": "./assets/splash-icon.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#f8f9fa"
-    },
     "assetBundlePatterns": [
       "**/*"
     ],
@@ -28,8 +23,7 @@
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
       "package": "com.aiplan.mobile",
-      "versionCode": 1,
-      "predictiveBackGestureEnabled": false
+      "versionCode": 1
     },
     "web": {
       "favicon": "./assets/favicon.png",
