@@ -1,8 +1,176 @@
 import { z } from "zod";
-import { PlanBriefSchema } from "@/lib/plan/schema";
+import { PlanBriefSchema, TaskPrioritySchema } from "@/lib/plan/schema";
 import { mergePlanSources } from "@/lib/plan/referenceSources";
 import type { AiProvider, GeneratePlanRequest, OptimizePlanRequest } from "./provider";
 import { createMockAiProvider } from "./mockProvider";
+
+// ── Structured plan generation (new) ─────────────────────────────────────
+
+export type StructuredPlanParams = {
+  goal: string;
+  dailyTime: number;       // hours
+  startDate: string;       // YYYY-MM-DD
+  level: string;
+  supplement: string;
+};
+
+const StructuredTaskSchema = z.object({
+  title: z.string().min(1),
+  description: z.string().min(1),
+  category: z.string().min(1),
+  priority: TaskPrioritySchema,
+  durationMinutes: z.number().int().positive(),
+});
+
+const StructuredPhaseSchema = z.object({
+  title: z.string().min(1),
+  objective: z.string().min(1),
+  tasks: z.array(StructuredTaskSchema),
+});
+
+const StructuredPlanResponseSchema = z.object({
+  summary: z.string().min(1),
+  assumptions: z.array(z.string()),
+  phases: z.array(StructuredPhaseSchema).min(1),
+});
+
+type StructuredPlanResponse = z.infer<typeof StructuredPlanResponseSchema>;
+
+function buildStructuredSystemPrompt(): string {
+  return [
+    "你是一位专业的计划教练，擅长根据用户目标制定个性化、可执行的学习/训练/项目计划。",
+    "你必须只输出 JSON，不要输出 Markdown，不要输出解释性前后缀。",
+    "",
+    "## 输出格式",
+    "JSON 必须包含以下字段：",
+    "- summary: 一句话说明这个计划的核心思路（给用户看的，20字以内）",
+    "- assumptions: 计划的默认假设（数组）",
+    "- phases: 阶段数组，每个阶段包含 title、objective、tasks",
+    "",
+    "## 阶段设计规则",
+    "- 根据总天数自动拆分为 3-5 个阶段",
+    "- 每个阶段有明确的目标和递进关系",
+    "- 阶段名称要生动有画面感，不要用'第一阶段'这种编号",
+    "",
+    "## 任务设计规则（最重要）",
+    "- 每天 1 个任务，每个任务必须**独特**，绝不允许重复",
+    "- 任务标题必须**具体、可执行**，包含动作和对象（如'精读真题阅读Passage 3并标注生词'）",
+    "- 任务描述要说明**具体做法、参考材料或预期产出**（2-4句话）",
+    "- 任务之间要有**递进关系**，后面的建立在前面的基础上",
+    "- 根据用户的基础水平调整难度：零基础从简单开始，有基础可以跳过入门",
+    "- 每个任务的 durationMinutes 必须在用户每天可用时间范围内",
+    "",
+    "## 绝对不要",
+    "- 不要输出'复习昨天内容''完成练习题'这种泛泛的任务",
+    "- 不要出现两个相同的任务标题",
+    "- 不要输出与用户目标无关的通用任务"
+  ].join("\n");
+}
+
+function buildStructuredUserPrompt(params: StructuredPlanParams): string {
+  const durationMatch = params.goal.match(/(\d+)\s*(?:天|日|day)/i);
+  const durationDays = durationMatch ? parseInt(durationMatch[1]) : 30;
+
+  return JSON.stringify({
+    task: "根据用户的详细需求生成一份个性化计划。每个任务都必须独特且递进。",
+    userNeeds: {
+      goal: params.goal,
+      totalDays: durationDays,
+      dailyTimeHours: params.dailyTime,
+      startDate: params.startDate,
+      currentLevel: params.level || "未说明",
+      supplement: params.supplement || "无",
+    },
+    outputRequirements: {
+      language: "zh-CN",
+      taskCount: durationDays,
+      phaseCount: durationDays <= 14 ? 3 : 4,
+      taskDurationRange: `每个任务 ${Math.round(params.dailyTime * 60 * 0.5)}-${Math.round(params.dailyTime * 60 * 0.9)} 分钟`,
+      outputShape: {
+        summary: "string (20字以内)",
+        assumptions: ["string"],
+        phases: [{
+          title: "string (阶段名称，要有画面感)",
+          objective: "string (阶段目标，具体说明这个阶段要达成什么)",
+          tasks: [{
+            title: "string (具体可执行的任务标题)",
+            description: "string (具体做法和预期产出)",
+            category: "string (practice/review/study/test 中选一个)",
+            priority: "'high' 或 'medium'",
+            durationMinutes: "number"
+          }]
+        }]
+      }
+    }
+  }, null, 2);
+}
+
+export function generateStructuredPlan(params: StructuredPlanParams, options: MimoProviderOptions = {}): Promise<StructuredPlanResponse> {
+  const apiKey = options.apiKey ?? process.env.MIMO_API_KEY ?? process.env.AI_API_KEY;
+  const baseUrl = (options.baseUrl ?? process.env.MIMO_API_BASE_URL ?? defaultBaseUrl).replace(/\/$/, "");
+  const model = options.model ?? process.env.MIMO_MODEL ?? process.env.AI_MODEL ?? defaultModel;
+  const fetcher = options.fetcher ?? fetch;
+  const timeoutMs = options.timeoutMs ?? 90000;
+
+  if (!apiKey) {
+    throw new Error("MIMO_API_KEY or AI_API_KEY is required.");
+  }
+
+  return callMimoStructured(fetcher, baseUrl, apiKey, model, timeoutMs, params);
+}
+
+async function callMimoStructured(
+  fetcher: typeof fetch,
+  baseUrl: string,
+  apiKey: string,
+  model: string,
+  timeoutMs: number,
+  params: StructuredPlanParams,
+): Promise<StructuredPlanResponse> {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), timeoutMs);
+
+  const response = await fetcher(`${baseUrl}/chat/completions`, {
+    method: "POST",
+    signal: controller.signal,
+    headers: {
+      "Content-Type": "application/json",
+      "api-key": apiKey,
+    },
+    body: JSON.stringify({
+      model,
+      messages: [
+        { role: "system", content: buildStructuredSystemPrompt() },
+        { role: "user", content: buildStructuredUserPrompt(params) },
+      ],
+      max_completion_tokens: 8192,
+      temperature: 0.7,
+      top_p: 0.9,
+      thinking: { type: "disabled" },
+      response_format: { type: "json_object" },
+      stream: false,
+    }),
+  }).catch((error) => {
+    if (error instanceof Error && error.name === "AbortError") {
+      throw new Error(`请求超过 ${Math.round(timeoutMs / 1000)} 秒未返回，请稍后重试。`);
+    }
+    throw error;
+  }).finally(() => clearTimeout(timeout));
+
+  if (!response.ok) {
+    const errorText = await response.text().catch(() => "");
+    throw new Error(`API request failed: ${response.status} ${errorText}`);
+  }
+
+  const json = (await response.json()) as ChatCompletionResponse;
+  const content = json.choices?.[0]?.message?.content;
+  if (!content) {
+    throw new Error("API response did not include message content.");
+  }
+
+  const parsed = JSON.parse(stripCodeFence(content));
+  return StructuredPlanResponseSchema.parse(parsed);
+}
 
 type MimoProviderOptions = {
   apiKey?: string;
