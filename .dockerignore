@@ -1,0 +1,9 @@
+node_modules
+.next
+.git
+*.md
+docs
+ai-plan-mobile
+ai-plan-harmony
+packages
+.claude
