@@ -1,0 +1,14 @@
+<view class="page page-padding generating-page">
+  <view wx:if="{{!hasError}}" class="generating-center">
+    <view class="loading-spinner">
+      <view class="spinner-ring" />
+    </view>
+    <text class="status-text">{{statusText}}</text>
+  </view>
+
+  <view wx:if="{{hasError}}" class="error-container">
+    <text class="error-emoji">:(</text>
+    <text class="error-text">{{errorMsg}}</text>
+    <button class="btn-primary retry-btn" bindtap="onRetry">重试</button>
+  </view>
+</view>

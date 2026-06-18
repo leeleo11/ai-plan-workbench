@@ -1,0 +1,75 @@
+<view class="page">
+  <view class="chat-header">
+    <text class="chat-header-emoji">{{petEmoji}}</text>
+    <text class="chat-header-name">{{petName}}</text>
+  </view>
+
+  <scroll-view
+    class="chat-body"
+    scroll-y
+    scroll-into-view="{{scrollTarget}}"
+    scroll-with-animation
+  >
+    <view class="chat-messages">
+      <chat-bubble
+        wx:for="{{messages}}"
+        wx:key="id"
+        message="{{item.text}}"
+        isAI="{{item.isAI}}"
+        petId="{{petId}}"
+      />
+      <view id="msg-bottom" />
+    </view>
+  </scroll-view>
+
+  <view class="chat-input-area">
+    <view wx:if="{{showTextInput}}" class="text-input-row">
+      <input
+        class="chat-text-input"
+        value="{{inputValue}}"
+        placeholder="输入你的回答..."
+        bindinput="onTextInput"
+        bindconfirm="onTextConfirm"
+      />
+      <view class="send-btn" bindtap="onTextConfirm">
+        <text class="send-btn-text">发送</text>
+      </view>
+    </view>
+
+    <view wx:if="{{showDailyTimeButtons}}" class="quick-buttons">
+      <view
+        wx:for="{{dailyTimeOptions}}"
+        wx:key="value"
+        class="quick-btn"
+        data-value="{{item.value}}"
+        bindtap="onSelectDailyTime"
+      >
+        <text>{{item.label}}</text>
+      </view>
+    </view>
+
+    <view wx:if="{{showStartDateButtons}}" class="quick-buttons">
+      <view
+        wx:for="{{startDateOptions}}"
+        wx:key="value"
+        class="quick-btn"
+        data-value="{{item.value}}"
+        bindtap="onSelectStartDate"
+      >
+        <text>{{item.label}}</text>
+      </view>
+    </view>
+
+    <view wx:if="{{showLevelButtons}}" class="quick-buttons">
+      <view
+        wx:for="{{levelOptions}}"
+        wx:key="value"
+        class="quick-btn"
+        data-value="{{item.value}}"
+        bindtap="onSelectLevel"
+      >
+        <text>{{item.label}}</text>
+      </view>
+    </view>
+  </view>
+</view>

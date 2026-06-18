@@ -1,0 +1,101 @@
+<view class="page page-padding">
+  <view class="header">
+    <text class="title">PlanPal</text>
+    <text class="subtitle">你的 AI 学习计划伙伴</text>
+  </view>
+
+  <!-- Quick Daily Plan Entry -->
+  <view class="daily-entry" bindtap="goToDaily">
+    <view class="daily-left">
+      <text class="daily-emoji">⚡</text>
+      <view class="daily-text">
+        <text class="daily-title">小安排</text>
+        <text class="daily-desc">说一句话，AI 帮你安排今天</text>
+      </view>
+    </view>
+    <text class="daily-arrow">›</text>
+  </view>
+
+  <view class="divider"><text class="divider-text">或制定长期计划</text></view>
+
+  <view class="section">
+    <text class="label">学习目标</text>
+    <textarea
+      class="goal-input"
+      value="{{goal}}"
+      placeholder="描述你想达成的目标"
+      maxlength="100"
+      auto-height
+      bindinput="onGoalInput"
+    />
+  </view>
+
+  <view class="section">
+    <text class="label">选择你的学习伙伴</text>
+    <view class="pet-list">
+      <view
+        wx:for="{{petList}}"
+        wx:key="id"
+        class="pet-card {{selectedPetId === item.id ? 'pet-card--selected' : ''}}"
+        data-pet-id="{{item.id}}"
+        bindtap="onSelectPet"
+      >
+        <text class="pet-emoji">{{item.emoji}}</text>
+        <view class="pet-info">
+          <text class="pet-name">{{item.name}}</text>
+          <text class="pet-summary">{{item.summary}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view class="section">
+    <text class="label">严格程度</text>
+    <view class="segment-group">
+      <view
+        wx:for="{{strictnessOptions}}"
+        wx:key="value"
+        class="segment-btn {{strictness === item.value ? 'segment-btn--active' : ''}}"
+        data-value="{{item.value}}"
+        bindtap="onSelectStrictness"
+      >
+        <text>{{item.label}}</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="section">
+    <text class="label">计划颗粒度</text>
+    <view class="segment-group">
+      <view
+        wx:for="{{granularityOptions}}"
+        wx:key="value"
+        class="segment-btn {{granularity === item.value ? 'segment-btn--active' : ''}}"
+        data-value="{{item.value}}"
+        bindtap="onSelectGranularity"
+      >
+        <text>{{item.label}}</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="section">
+    <text class="label">提醒方式</text>
+    <view class="segment-group">
+      <view
+        wx:for="{{reminderOptions}}"
+        wx:key="value"
+        class="segment-btn {{reminder === item.value ? 'segment-btn--active' : ''}}"
+        data-value="{{item.value}}"
+        bindtap="onSelectReminder"
+      >
+        <text>{{item.label}}</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="actions">
+    <button class="btn-primary" bindtap="onTapContinue">继续制定计划</button>
+    <button wx:if="{{hasExistingPlan}}" class="btn-secondary" bindtap="onTapViewPlan">查看当前计划</button>
+  </view>
+</view>

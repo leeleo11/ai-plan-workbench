@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "计划总览",
+  "usingComponents": {
+    "calendar": "/components/calendar/calendar"
+  }
+}

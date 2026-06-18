@@ -1,0 +1,99 @@
+.calendar-wrap {
+  border: 2rpx solid #D8CEBC;
+  border-radius: 16rpx;
+  background: #FFFCF4;
+  padding: 28rpx;
+}
+.nav-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 28rpx;
+}
+.nav-btn {
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 16rpx;
+  background: #F5F1E8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.nav-arrow {
+  color: #1E2A24;
+  font-size: 44rpx;
+  font-weight: 900;
+}
+.nav-title {
+  color: #1E2A24;
+  font-size: 34rpx;
+  font-weight: 900;
+}
+.week-row {
+  display: flex;
+  margin-bottom: 12rpx;
+}
+.weekday {
+  width: 14.28%;
+  text-align: center;
+  color: #817767;
+  font-size: 24rpx;
+  font-weight: 800;
+}
+.grid {
+  display: flex;
+  flex-wrap: wrap;
+}
+.cell {
+  width: 14.28%;
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 16rpx;
+  border: 2rpx solid transparent;
+  box-sizing: border-box;
+}
+.has-tasks {
+  background: #F2E7D4;
+}
+.all-done {
+  background: #EAF7F3;
+}
+.today {
+  border-color: #2F8F7B;
+}
+.selected {
+  background: #24352F;
+}
+.day-text {
+  color: #1E2A24;
+  font-size: 26rpx;
+  font-weight: 800;
+}
+.done-text {
+  color: #2F8F7B;
+}
+.selected-text {
+  color: #FFF8EA;
+}
+.dot-row {
+  display: flex;
+  align-items: center;
+  gap: 6rpx;
+  margin-top: 2rpx;
+}
+.dot {
+  width: 10rpx;
+  height: 10rpx;
+  border-radius: 5rpx;
+  background: #C8A050;
+}
+.dot-done {
+  background: #2F8F7B;
+}
+.count {
+  color: #625B4D;
+  font-size: 18rpx;
+}

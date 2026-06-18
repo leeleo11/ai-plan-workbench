@@ -1,0 +1,161 @@
+/* Daily Plan Entry */
+.daily-entry {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(135deg, #24352F 0%, #2F8F7B 100%);
+  border-radius: 16rpx;
+  padding: 32rpx;
+  margin-bottom: 32rpx;
+}
+.daily-left {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+}
+.daily-emoji {
+  font-size: 48rpx;
+}
+.daily-title {
+  color: #FFF8EA;
+  font-size: 34rpx;
+  font-weight: 900;
+  display: block;
+}
+.daily-desc {
+  color: #D8E7D8;
+  font-size: 24rpx;
+  display: block;
+  margin-top: 4rpx;
+}
+.daily-arrow {
+  color: #FFF8EA;
+  font-size: 40rpx;
+  font-weight: 900;
+}
+.divider {
+  display: flex;
+  align-items: center;
+  margin-bottom: 32rpx;
+}
+.divider::before, .divider::after {
+  content: '';
+  flex: 1;
+  height: 2rpx;
+  background: #D8CEBC;
+}
+.divider-text {
+  color: #817767;
+  font-size: 24rpx;
+  padding: 0 20rpx;
+}
+
+.header {
+  margin-bottom: 48rpx;
+}
+
+.title {
+  font-size: 56rpx;
+  font-weight: 900;
+  color: #1E2A24;
+  display: block;
+}
+
+.subtitle {
+  font-size: 30rpx;
+  color: #625B4D;
+  margin-top: 8rpx;
+  display: block;
+}
+
+.section {
+  margin-bottom: 40rpx;
+}
+
+.goal-input {
+  width: 100%;
+  background-color: #FFFCF4;
+  border: 2rpx solid #D8CEBC;
+  border-radius: 16rpx;
+  padding: 24rpx;
+  font-size: 30rpx;
+  color: #1E2A24;
+  box-sizing: border-box;
+  min-height: 80rpx;
+}
+
+.pet-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+
+.pet-card {
+  display: flex;
+  align-items: flex-start;
+  background-color: #FFFCF4;
+  border: 2rpx solid #D8CEBC;
+  border-radius: 16rpx;
+  padding: 28rpx;
+  transition: border-color 0.2s;
+}
+
+.pet-card--selected {
+  border-color: #2F8F7B;
+  background-color: #EAF7F3;
+}
+
+.pet-emoji {
+  font-size: 56rpx;
+  margin-right: 24rpx;
+  line-height: 1;
+}
+
+.pet-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.pet-name {
+  font-size: 30rpx;
+  font-weight: 800;
+  color: #1E2A24;
+  margin-bottom: 6rpx;
+}
+
+.pet-summary {
+  font-size: 24rpx;
+  color: #625B4D;
+  line-height: 1.5;
+}
+
+.segment-group {
+  display: flex;
+  gap: 16rpx;
+}
+
+.segment-btn {
+  flex: 1;
+  background-color: #FFFCF4;
+  border: 2rpx solid #D8CEBC;
+  border-radius: 12rpx;
+  padding: 18rpx 0;
+  text-align: center;
+  font-size: 26rpx;
+  color: #625B4D;
+  font-weight: 600;
+}
+
+.segment-btn--active {
+  background-color: #24352F;
+  border-color: #24352F;
+  color: #FFF8EA;
+}
+
+.actions {
+  margin-top: 20rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}

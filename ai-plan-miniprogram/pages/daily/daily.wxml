@@ -1,0 +1,134 @@
+<wxs module="stats">
+module.exports = {
+  doneCount: function(schedule) {
+    var count = 0;
+    for (var i = 0; i < schedule.length; i++) {
+      if (schedule[i].done) count++;
+    }
+    return count;
+  },
+  percent: function(schedule) {
+    if (schedule.length === 0) return 0;
+    var count = 0;
+    for (var i = 0; i < schedule.length; i++) {
+      if (schedule[i].done) count++;
+    }
+    return Math.round(count / schedule.length * 100);
+  }
+};
+</wxs>
+<view class="page page-padding">
+  <!-- Input Section -->
+  <view wx:if="{{!plan}}" class="input-section">
+    <view class="header">
+      <text class="kicker">小安排</text>
+      <text class="title">今天想怎么安排？</text>
+      <text class="subtitle">说一句话，我帮你安排</text>
+    </view>
+
+    <!-- Quick Examples -->
+    <view class="examples">
+      <view wx:for="{{quickExamples}}" wx:key="*this" class="example-btn" data-text="{{item}}" bindtap="onQuickExample">
+        <text>{{item}}</text>
+      </view>
+    </view>
+
+    <!-- Main Input -->
+    <textarea class="main-input" value="{{inputText}}" bindinput="onInput" placeholder="例如：今天想复习英语、健身、写论文，但别太累" placeholder-class="placeholder" maxlength="200" auto-height />
+
+    <!-- Date Selection -->
+    <view class="option-group">
+      <text class="option-label">计划日期</text>
+      <view class="option-row">
+        <view wx:for="{{dateOptions}}" wx:key="*this" class="option-btn {{date === item ? 'option-active' : ''}}" data-value="{{item}}" bindtap="onSelectDate">
+          <text>{{item}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- Intensity Selection -->
+    <view class="option-group">
+      <text class="option-label">计划强度</text>
+      <view class="option-row">
+        <view wx:for="{{intensityOptions}}" wx:key="*this" class="option-btn {{intensity === item ? 'option-active' : ''}}" data-value="{{item}}" bindtap="onSelectIntensity">
+          <text>{{item}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- Generate Button -->
+    <view class="btn-primary {{!inputText ? 'btn-disabled' : ''}}" bindtap="onGenerate">
+      <text>生成计划</text>
+    </view>
+  </view>
+
+  <!-- Loading State -->
+  <view wx:if="{{loading}}" class="loading-section">
+    <view class="spinner"></view>
+    <text class="loading-text">正在为你安排日程...</text>
+  </view>
+
+  <!-- Error State -->
+  <view wx:if="{{error}}" class="error-section">
+    <text class="error-emoji">😅</text>
+    <text class="error-text">{{error}}</text>
+    <view class="btn-secondary" bindtap="onGenerate"><text>重试</text></view>
+  </view>
+
+  <!-- Result Section -->
+  <view wx:if="{{plan && !loading}}" class="result-section">
+    <!-- Plan Header -->
+    <view class="plan-header">
+      <view class="plan-header-top">
+        <view class="back-link" bindtap="onBack"><text>← 重新输入</text></view>
+      </view>
+      <text class="plan-title">{{plan.title}}</text>
+      <text class="plan-summary">{{plan.summary}}</text>
+    </view>
+
+    <!-- Completion Stats -->
+    <view class="stats-bar">
+      <text class="stats-text">已完成 {{stats.doneCount(plan.schedule)}}/{{plan.schedule.length}} 项</text>
+      <view class="stats-progress">
+        <view class="stats-fill" style="width: {{stats.percent(plan.schedule)}}%"></view>
+      </view>
+    </view>
+
+    <!-- Schedule List -->
+    <view class="schedule-list">
+      <view wx:for="{{plan.schedule}}" wx:key="time" class="schedule-item {{item.done ? 'schedule-done' : ''}}" data-index="{{index}}" bindtap="onToggleDone">
+        <view class="schedule-check {{item.done ? 'check-done' : ''}}">
+          <text wx:if="{{item.done}}">✓</text>
+        </view>
+        <view class="schedule-time">
+          <text>{{item.time}}</text>
+        </view>
+        <view class="schedule-content">
+          <text class="schedule-task {{item.done ? 'task-done' : ''}}">{{item.task}}</text>
+          <view class="schedule-tags">
+            <text class="tag tag-{{item.type}}">{{item.type === 'work' ? '工作' : item.type === 'study' ? '学习' : item.type === 'exercise' ? '运动' : item.type === 'rest' ? '休息' : item.type === 'social' ? '社交' : '生活'}}</text>
+            <text wx:if="{{item.priority === 'high'}}" class="tag tag-high">重要</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- Tips -->
+    <view wx:if="{{plan.tips.length > 0}}" class="tips-card">
+      <text class="tips-title">💡 小贴士</text>
+      <text wx:for="{{plan.tips}}" wx:key="*this" class="tip-text">{{item}}</text>
+    </view>
+
+    <!-- Adjust Section -->
+    <view class="adjust-section">
+      <view class="btn-secondary" bindtap="onShowAdjust">
+        <text>{{showAdjust ? '收起' : '🔄 一键调整'}}</text>
+      </view>
+      <view wx:if="{{showAdjust}}" class="adjust-options">
+        <view wx:for="{{adjustOptions}}" wx:key="*this" class="adjust-btn" data-text="{{item}}" bindtap="onAdjust">
+          <text>{{item}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

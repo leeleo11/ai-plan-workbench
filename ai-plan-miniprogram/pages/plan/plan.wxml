@@ -1,0 +1,102 @@
+<view class="page">
+  <!-- Header -->
+  <view class="plan-header">
+    <view class="header-top">
+      <view class="back-btn" bindtap="onBackToIndex">
+        <text class="back-arrow">‹</text>
+        <text class="back-text">重新制定</text>
+      </view>
+      <view wx:if="{{petInfo}}" class="pet-badge">
+        <text class="pet-emoji">{{petInfo.emoji}}</text>
+        <text class="pet-name">{{petInfo.name}}</text>
+      </view>
+    </view>
+    <text class="plan-title">{{goalTitle}}</text>
+  </view>
+
+  <!-- Summary band -->
+  <view class="summary-band">
+    <view class="summary-top">
+      <text class="summary-label">计划概览</text>
+    </view>
+    <text class="summary-text">{{summary}}</text>
+    <view class="summary-links">
+      <text class="summary-link" bindtap="onNavigateAdjust">调整伙伴与计划</text>
+      <text class="summary-link" bindtap="onNavigateStats">📊 数据统计</text>
+    </view>
+    <view class="progress-bar-wrap">
+      <view class="progress-bar-bg">
+        <view class="progress-bar-fill" style="width: {{progressPercent}}%"></view>
+      </view>
+      <text class="progress-percent">{{progressPercent}}%</text>
+    </view>
+    <view class="stats-row">
+      <view class="stat-item">
+        <text class="stat-value">{{phaseCount}}</text>
+        <text class="stat-label">阶段</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-value">{{taskCount}}</text>
+        <text class="stat-label">任务</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-value">{{totalHours}}</text>
+        <text class="stat-label">小时</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-value">{{doneCount}}</text>
+        <text class="stat-label">已完成</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- Phase rail -->
+  <scroll-view class="phase-rail" scroll-x enable-flex>
+    <view wx:for="{{phases}}" wx:key="id" class="phase-card">
+      <text class="phase-index">阶段 {{index + 1}}</text>
+      <text class="phase-title">{{item.title}}</text>
+      <text class="phase-date">{{item.startDate}} ~ {{item.endDate}}</text>
+      <text class="phase-objective">{{item.objective}}</text>
+    </view>
+  </scroll-view>
+
+  <!-- Calendar header -->
+  <view class="calendar-header">
+    <text class="calendar-title">每日任务</text>
+    <view class="today-btn" bindtap="onGoToday">
+      <text>📅 今天</text>
+    </view>
+  </view>
+
+  <!-- Calendar -->
+  <view class="calendar-section">
+    <calendar plan="{{plan}}" selectedDate="{{selectedDate}}" bind:daypress="onDayPress" />
+  </view>
+
+  <!-- Task panel -->
+  <view class="task-panel">
+    <text class="task-date-label">{{selectedDate}}</text>
+    <view wx:if="{{todayTasks.length === 0}}" class="empty-tasks">
+      <text class="empty-text">这一天没有任务安排</text>
+    </view>
+    <view wx:for="{{todayTasks}}" wx:key="id" class="task-card">
+      <view class="task-left">
+        <view
+          class="checkbox {{item.status === 'done' ? 'checkbox-done' : ''}}"
+          data-task-id="{{item.id}}"
+          bindtap="onToggleTask"
+        >
+          <text wx:if="{{item.status === 'done'}}" class="check-mark">✓</text>
+        </view>
+      </view>
+      <view class="task-body" data-task-id="{{item.id}}" bindtap="onTapTask">
+        <text class="task-title {{item.status === 'done' ? 'task-done' : ''}}">{{item.title}}</text>
+        <text class="task-desc">{{item.description}}</text>
+        <view class="task-meta">
+          <text class="meta-text">{{item.durationMinutes}} 分钟 · {{item.priority === 'high' ? '主线' : item.priority === 'medium' ? '支线' : '轻松'}}</text>
+          <text wx:if="{{item.status === 'done'}}" class="meta-done">✅ 已完成</text>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,47 @@
+.bubble-row {
+  display: flex;
+  flex-direction: row;
+  padding: 0 32rpx;
+  margin-bottom: 24rpx;
+}
+.ai-row {
+  justify-content: flex-start;
+}
+.user-row {
+  justify-content: flex-end;
+}
+.avatar {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 16rpx;
+  border: 2rpx solid;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 16rpx;
+}
+.avatar-emoji {
+  font-size: 40rpx;
+}
+.bubble {
+  max-width: 78%;
+  border-radius: 16rpx;
+  border: 2rpx solid;
+  padding: 22rpx 28rpx;
+}
+.ai-bubble {
+  background: #FFF4E6;
+  border-color: #F1D2A8;
+}
+.user-bubble {
+  background: #24352F;
+  border-color: #24352F;
+}
+.message {
+  font-size: 30rpx;
+  line-height: 44rpx;
+  color: #1E2A24;
+}
+.user-text {
+  color: #FFF8EA;
+}

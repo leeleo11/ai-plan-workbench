@@ -1,0 +1,8 @@
+<view class="bubble-row {{isAI ? 'ai-row' : 'user-row'}}">
+  <view wx:if="{{isAI}}" class="avatar" style="background:{{pets[petId].light}};border-color:{{pets[petId].border}}">
+    <text class="avatar-emoji">{{pets[petId].emoji}}</text>
+  </view>
+  <view class="bubble {{isAI ? 'ai-bubble' : 'user-bubble'}}" style="{{isAI ? 'background:' + styles.hybrid.light + ';border-color:' + styles.hybrid.border : ''}}">
+    <text class="message {{isAI ? '' : 'user-text'}}">{{message}}</text>
+  </view>
+</view>

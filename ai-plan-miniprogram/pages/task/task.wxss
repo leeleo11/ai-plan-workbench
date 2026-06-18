@@ -1,0 +1,238 @@
+.task-page {
+  padding-bottom: 80rpx;
+}
+
+.task-header {
+  margin-bottom: 32rpx;
+}
+
+.back-btn {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+}
+
+.back-arrow {
+  font-size: 48rpx;
+  font-weight: 900;
+  color: #1E2A24;
+  line-height: 1;
+}
+
+.back-text {
+  font-size: 28rpx;
+  color: #625B4D;
+  font-weight: 700;
+}
+
+.task-title {
+  font-size: 44rpx;
+  font-weight: 900;
+  color: #1E2A24;
+  display: block;
+  line-height: 1.3;
+  margin-bottom: 20rpx;
+}
+
+.task-date-row {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  margin-bottom: 24rpx;
+}
+
+.date-text {
+  font-size: 26rpx;
+  color: #625B4D;
+}
+
+.duration-text {
+  font-size: 26rpx;
+  color: #625B4D;
+}
+
+.status-badge {
+  padding: 6rpx 16rpx;
+  border-radius: 8rpx;
+  font-size: 22rpx;
+  font-weight: 700;
+}
+
+.badge-todo {
+  background: #F2E7D4;
+  color: #625B4D;
+}
+
+.badge-done {
+  background: #EAF7F3;
+  color: #2F8F7B;
+}
+
+.tag-line {
+  display: flex;
+  gap: 16rpx;
+  margin-bottom: 32rpx;
+}
+
+.tag {
+  padding: 8rpx 20rpx;
+  border-radius: 8rpx;
+  font-size: 24rpx;
+  font-weight: 700;
+}
+
+.tag-priority {
+  background: #24352F;
+  color: #FFF8EA;
+}
+
+.tag-category {
+  background: #FFFCF4;
+  border: 2rpx solid #D8CEBC;
+  color: #625B4D;
+}
+
+.toggle-section {
+  margin-bottom: 36rpx;
+}
+
+.toggle-btn {
+  background: #FFFCF4;
+  border: 2rpx solid #D8CEBC;
+  border-radius: 16rpx;
+  padding: 28rpx;
+  text-align: center;
+  font-size: 30rpx;
+  font-weight: 800;
+  color: #1E2A24;
+}
+
+.toggle-btn-done {
+  background: #EAF7F3;
+  border-color: #2F8F7B;
+  color: #2F8F7B;
+}
+
+.section-label {
+  font-size: 28rpx;
+  font-weight: 800;
+  color: #1E2A24;
+  margin-bottom: 16rpx;
+  display: block;
+}
+
+.desc-card {
+  background: #FFFCF4;
+  border: 2rpx solid #D8CEBC;
+  border-radius: 16rpx;
+  padding: 28rpx;
+  margin-bottom: 24rpx;
+}
+
+.desc-text {
+  font-size: 28rpx;
+  color: #1E2A24;
+  line-height: 1.7;
+}
+
+.tip-card {
+  background: #EAF7F3;
+  border: 2rpx solid #BFE7DA;
+  border-radius: 16rpx;
+  padding: 28rpx;
+  margin-bottom: 24rpx;
+}
+
+.tip-text {
+  font-size: 28rpx;
+  color: #24352F;
+  line-height: 1.7;
+}
+
+.edit-btn {
+  background: #FFFCF4;
+  border: 2rpx solid #D8CEBC;
+  border-radius: 16rpx;
+  padding: 28rpx;
+  text-align: center;
+  font-size: 30rpx;
+  font-weight: 800;
+  color: #1E2A24;
+}
+
+/* Edit mode */
+.edit-section {
+  margin-top: 8rpx;
+}
+
+.edit-input {
+  background: #FFFCF4;
+  border: 2rpx solid #D8CEBC;
+  border-radius: 16rpx;
+  padding: 24rpx;
+  font-size: 30rpx;
+  color: #1E2A24;
+  margin-bottom: 24rpx;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.edit-textarea {
+  background: #FFFCF4;
+  border: 2rpx solid #D8CEBC;
+  border-radius: 16rpx;
+  padding: 24rpx;
+  font-size: 28rpx;
+  color: #1E2A24;
+  margin-bottom: 24rpx;
+  width: 100%;
+  min-height: 160rpx;
+  box-sizing: border-box;
+}
+
+.quick-btn-row {
+  display: flex;
+  gap: 16rpx;
+  margin-bottom: 24rpx;
+}
+
+.quick-btn {
+  flex: 1;
+  background: #FFFCF4;
+  border: 2rpx solid #D8CEBC;
+  border-radius: 12rpx;
+  padding: 18rpx 0;
+  text-align: center;
+  font-size: 26rpx;
+  font-weight: 700;
+  color: #625B4D;
+}
+
+.quick-btn-active {
+  background: #24352F;
+  border-color: #24352F;
+  color: #FFF8EA;
+}
+
+.action-row {
+  display: flex;
+  gap: 20rpx;
+  margin-top: 16rpx;
+}
+
+.action-btn {
+  flex: 1;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 32rpx;
+  padding-top: 120rpx;
+}
+
+.empty-text {
+  font-size: 30rpx;
+  color: #625B4D;
+}

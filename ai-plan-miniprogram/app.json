@@ -1,0 +1,17 @@
+{
+  "pages": [
+    "pages/daily/daily",
+    "pages/index/index",
+    "pages/chat/chat",
+    "pages/generating/generating",
+    "pages/plan/plan",
+    "pages/task/task"
+  ],
+  "window": {
+    "navigationBarBackgroundColor": "#FFFCF4",
+    "navigationBarTitleText": "PlanPal",
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#F5F1E8"
+  },
+  "sitemapLocation": "sitemap.json"
+}

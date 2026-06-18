@@ -1,0 +1,123 @@
+<view class="page page-padding task-page">
+  <!-- Header -->
+  <view class="task-header">
+    <view class="back-btn" bindtap="onBack">
+      <text class="back-arrow">‹</text>
+      <text class="back-text">返回</text>
+    </view>
+  </view>
+
+  <view wx:if="{{task}}">
+    <!-- Title + meta -->
+    <text class="task-title">{{task.title}}</text>
+    <view class="task-date-row">
+      <text class="date-text">{{dateDisplay}}</text>
+      <text class="duration-text">{{task.durationMinutes}} 分钟</text>
+      <view class="status-badge {{isDone ? 'badge-done' : 'badge-todo'}}">
+        <text>{{isDone ? '已完成' : '待完成'}}</text>
+      </view>
+    </view>
+
+    <!-- Tag line -->
+    <view class="tag-line">
+      <view class="tag tag-priority">
+        <text>{{priorityText}}</text>
+      </view>
+      <view class="tag tag-category">
+        <text>{{categoryText}}</text>
+      </view>
+    </view>
+
+    <!-- Toggle button -->
+    <view class="toggle-section">
+      <view class="toggle-btn {{isDone ? 'toggle-btn-done' : ''}}" bindtap="onToggleStatus">
+        <text wx:if="{{!isDone}}">⬜ 标记为完成</text>
+        <text wx:else>✅ 已完成 — 点击取消</text>
+      </view>
+    </view>
+
+    <!-- View mode -->
+    <view wx:if="{{!editMode}}">
+      <!-- Description card -->
+      <view class="desc-card">
+        <text class="section-label">任务描述</text>
+        <text class="desc-text">{{task.description || '暂无描述'}}</text>
+      </view>
+
+      <!-- Advisor tip -->
+      <view wx:if="{{task.advisorTip}}" class="tip-card">
+        <text class="section-label">伙伴建议</text>
+        <text class="tip-text">{{task.advisorTip}}</text>
+      </view>
+
+      <!-- Edit button -->
+      <view class="edit-btn" bindtap="onTapEdit">
+        <text>✏️ 编辑任务</text>
+      </view>
+    </view>
+
+    <!-- Edit mode -->
+    <view wx:if="{{editMode}}" class="edit-section">
+      <text class="section-label">任务标题</text>
+      <input
+        class="edit-input"
+        value="{{editTitle}}"
+        placeholder="输入任务标题"
+        bindinput="onEditTitleInput"
+      />
+
+      <text class="section-label">任务描述</text>
+      <textarea
+        class="edit-textarea"
+        value="{{editDesc}}"
+        placeholder="输入任务描述"
+        bindinput="onEditDescInput"
+        auto-height
+      />
+
+      <text class="section-label">日期</text>
+      <input
+        class="edit-input"
+        value="{{editDate}}"
+        placeholder="YYYY-MM-DD"
+        bindinput="onEditDateInput"
+      />
+      <view class="quick-btn-row">
+        <view
+          wx:for="{{dateQuickButtons}}"
+          wx:key="value"
+          class="quick-btn {{editDate === item.value ? 'quick-btn-active' : ''}}"
+          data-value="{{item.value}}"
+          bindtap="onQuickDate"
+        >
+          <text>{{item.label}}</text>
+        </view>
+      </view>
+
+      <text class="section-label">时长（分钟）</text>
+      <view class="quick-btn-row">
+        <view
+          wx:for="{{durationQuickButtons}}"
+          wx:key="*this"
+          class="quick-btn {{editDuration === item ? 'quick-btn-active' : ''}}"
+          data-duration="{{item}}"
+          bindtap="onQuickDuration"
+        >
+          <text>{{item}}分</text>
+        </view>
+      </view>
+
+      <!-- Action row -->
+      <view class="action-row">
+        <button class="btn-secondary action-btn" bindtap="onCancelEdit">取消</button>
+        <button class="btn-primary action-btn" bindtap="onSaveEdit">保存修改</button>
+      </view>
+    </view>
+  </view>
+
+  <!-- Fallback if task not found -->
+  <view wx:if="{{!task}}" class="empty-state">
+    <text class="empty-text">任务未找到</text>
+    <button class="btn-secondary" bindtap="onBack">返回</button>
+  </view>
+</view>
