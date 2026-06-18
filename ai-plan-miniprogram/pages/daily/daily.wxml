@@ -14,9 +14,14 @@ module.exports = {
       if (schedule[i].done) count++;
     }
     return Math.round(count / schedule.length * 100);
+  },
+  typeLabel: function(type) {
+    var map = { work: '工作', study: '学习', exercise: '运动', rest: '休息', social: '社交', life: '生活', meal: '餐饮', commute: '通勤', other: '其他' };
+    return map[type] || type;
   }
 };
 </wxs>
+
 <view class="page page-padding">
   <!-- Input Section -->
   <view wx:if="{{!plan}}" class="input-section">
@@ -26,17 +31,14 @@ module.exports = {
       <text class="subtitle">说一句话，我帮你安排</text>
     </view>
 
-    <!-- Quick Examples -->
     <view class="examples">
       <view wx:for="{{quickExamples}}" wx:key="*this" class="example-btn" data-text="{{item}}" bindtap="onQuickExample">
         <text>{{item}}</text>
       </view>
     </view>
 
-    <!-- Main Input -->
     <textarea class="main-input" value="{{inputText}}" bindinput="onInput" placeholder="例如：今天想复习英语、健身、写论文，但别太累" placeholder-class="placeholder" maxlength="200" auto-height />
 
-    <!-- Date Selection -->
     <view class="option-group">
       <text class="option-label">计划日期</text>
       <view class="option-row">
@@ -46,7 +48,6 @@ module.exports = {
       </view>
     </view>
 
-    <!-- Intensity Selection -->
     <view class="option-group">
       <text class="option-label">计划强度</text>
       <view class="option-row">
@@ -56,28 +57,26 @@ module.exports = {
       </view>
     </view>
 
-    <!-- Generate Button -->
     <view class="btn-primary {{!inputText ? 'btn-disabled' : ''}}" bindtap="onGenerate">
       <text>生成计划</text>
     </view>
   </view>
 
-  <!-- Loading State -->
+  <!-- Loading -->
   <view wx:if="{{loading}}" class="loading-section">
     <view class="spinner"></view>
     <text class="loading-text">正在为你安排日程...</text>
   </view>
 
-  <!-- Error State -->
+  <!-- Error -->
   <view wx:if="{{error}}" class="error-section">
     <text class="error-emoji">😅</text>
     <text class="error-text">{{error}}</text>
     <view class="btn-secondary" bindtap="onGenerate"><text>重试</text></view>
   </view>
 
-  <!-- Result Section -->
+  <!-- Result -->
   <view wx:if="{{plan && !loading}}" class="result-section">
-    <!-- Plan Header -->
     <view class="plan-header">
       <view class="plan-header-top">
         <view class="back-link" bindtap="onBack"><text>← 重新输入</text></view>
@@ -86,7 +85,7 @@ module.exports = {
       <text class="plan-summary">{{plan.summary}}</text>
     </view>
 
-    <!-- Completion Stats -->
+    <!-- Stats -->
     <view class="stats-bar">
       <text class="stats-text">已完成 {{stats.doneCount(plan.schedule)}}/{{plan.schedule.length}} 项</text>
       <view class="stats-progress">
@@ -94,20 +93,23 @@ module.exports = {
       </view>
     </view>
 
-    <!-- Schedule List -->
+    <!-- Timeline -->
     <view class="schedule-list">
-      <view wx:for="{{plan.schedule}}" wx:key="time" class="schedule-item {{item.done ? 'schedule-done' : ''}}" data-index="{{index}}" bindtap="onToggleDone">
+      <view wx:for="{{plan.schedule}}" wx:key="id" class="schedule-item {{item.done ? 'schedule-done' : ''}}" data-index="{{index}}" bindtap="onToggleDone">
         <view class="schedule-check {{item.done ? 'check-done' : ''}}">
           <text wx:if="{{item.done}}">✓</text>
         </view>
-        <view class="schedule-time">
-          <text>{{item.time}}</text>
+        <view class="schedule-time-col">
+          <text class="time-start">{{item.start_time}}</text>
+          <text class="time-end">{{item.end_time}}</text>
         </view>
         <view class="schedule-content">
-          <text class="schedule-task {{item.done ? 'task-done' : ''}}">{{item.task}}</text>
+          <text class="schedule-task {{item.done ? 'task-done' : ''}}">{{item.title}}</text>
+          <text class="schedule-desc">{{item.description}}</text>
           <view class="schedule-tags">
-            <text class="tag tag-{{item.type}}">{{item.type === 'work' ? '工作' : item.type === 'study' ? '学习' : item.type === 'exercise' ? '运动' : item.type === 'rest' ? '休息' : item.type === 'social' ? '社交' : '生活'}}</text>
+            <text class="tag tag-{{item.type}}">{{stats.typeLabel(item.type)}}</text>
             <text wx:if="{{item.priority === 'high'}}" class="tag tag-high">重要</text>
+            <text wx:if="{{item.can_skip}}" class="tag tag-skip">可跳过</text>
           </view>
         </view>
       </view>
@@ -119,14 +121,14 @@ module.exports = {
       <text wx:for="{{plan.tips}}" wx:key="*this" class="tip-text">{{item}}</text>
     </view>
 
-    <!-- Adjust Section -->
+    <!-- Adjust -->
     <view class="adjust-section">
       <view class="btn-secondary" bindtap="onShowAdjust">
         <text>{{showAdjust ? '收起' : '🔄 一键调整'}}</text>
       </view>
       <view wx:if="{{showAdjust}}" class="adjust-options">
-        <view wx:for="{{adjustOptions}}" wx:key="*this" class="adjust-btn" data-text="{{item}}" bindtap="onAdjust">
-          <text>{{item}}</text>
+        <view wx:for="{{adjustOptions}}" wx:key="text" class="adjust-btn" data-text="{{item.text}}" data-instruction="{{item.instruction}}" bindtap="onAdjust">
+          <text>{{item.text}}</text>
         </view>
       </view>
     </view>

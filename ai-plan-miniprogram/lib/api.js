@@ -32,4 +32,49 @@ function generatePlan(params) {
   });
 }
 
-module.exports = { generatePlan };
+function generateDailyPlan(params) {
+  return new Promise((resolve, reject) => {
+    wx.request({
+      url: `${app.globalData.apiBase}/api/plans/daily`,
+      method: 'POST',
+      header: { 'Content-Type': 'application/json' },
+      data: params,
+      success(res) {
+        if (res.statusCode === 200 && res.data.success) {
+          resolve(res.data.data);
+        } else {
+          reject(new Error(res.data.error || '日常计划生成失败'));
+        }
+      },
+      fail(err) {
+        reject(new Error(err.errMsg || '网络请求失败'));
+      },
+    });
+  });
+}
+
+function revisePlan(originalPlan, instruction) {
+  return new Promise((resolve, reject) => {
+    wx.request({
+      url: `${app.globalData.apiBase}/api/plans/revise`,
+      method: 'POST',
+      header: { 'Content-Type': 'application/json' },
+      data: {
+        original_plan: originalPlan,
+        adjust_instruction: instruction,
+      },
+      success(res) {
+        if (res.statusCode === 200 && res.data.success) {
+          resolve(res.data.data);
+        } else {
+          reject(new Error(res.data.error || '计划调整失败'));
+        }
+      },
+      fail(err) {
+        reject(new Error(err.errMsg || '网络请求失败'));
+      },
+    });
+  });
+}
+
+module.exports = { generatePlan, generateDailyPlan, revisePlan };

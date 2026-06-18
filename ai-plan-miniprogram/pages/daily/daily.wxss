@@ -51,14 +51,33 @@
 .check-done { background: #2F8F7B; border-color: #2F8F7B; }
 .check-done text { color: #FFF; font-size: 28rpx; font-weight: 900; }
 
-.schedule-time { width: 200rpx; flex-shrink: 0; }
-.schedule-time text { color: #817767; font-size: 26rpx; font-weight: 800; }
+.schedule-time-col {
+  width: 130rpx;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4rpx;
+  padding-right: 16rpx;
+  border-right: 4rpx solid #D8CEBC;
+}
+.time-start {
+  color: #1E2A24;
+  font-size: 26rpx;
+  font-weight: 900;
+}
+.time-end {
+  color: #817767;
+  font-size: 22rpx;
+  font-weight: 600;
+}
 
-.schedule-content { flex: 1; }
-.schedule-task { color: #1E2A24; font-size: 30rpx; font-weight: 800; display: block; line-height: 1.4; margin-bottom: 8rpx; }
+.schedule-content { flex: 1; padding-left: 16rpx; }
+.schedule-task { color: #1E2A24; font-size: 30rpx; font-weight: 800; display: block; line-height: 1.4; margin-bottom: 6rpx; }
 .task-done { color: #817767; text-decoration: line-through; }
+.schedule-desc { color: #625B4D; font-size: 24rpx; line-height: 1.5; display: block; margin-bottom: 8rpx; }
 
-.schedule-tags { display: flex; gap: 10rpx; }
+.schedule-tags { display: flex; gap: 10rpx; flex-wrap: wrap; }
 .tag { font-size: 20rpx; font-weight: 800; padding: 4rpx 12rpx; border-radius: 8rpx; }
 .tag-work { background: #EDF3FF; color: #315B9A; }
 .tag-study { background: #FFF4E6; color: #8A5A28; }
@@ -66,7 +85,11 @@
 .tag-life { background: #F2E7D4; color: #817767; }
 .tag-rest { background: #F5F1E8; color: #9A907F; }
 .tag-social { background: #FAF5FF; color: #8B5CF6; }
+.tag-meal { background: #FFF7ED; color: #C2410C; }
+.tag-commute { background: #F0F9FF; color: #0369A1; }
+.tag-other { background: #F5F1E8; color: #817767; }
 .tag-high { background: #FEF2F2; color: #B9472F; }
+.tag-skip { background: #F5F1E8; color: #9A907F; font-style: italic; }
 
 .tips-card { background: #FFFCF4; border: 2rpx solid #D8CEBC; border-radius: 16rpx; padding: 28rpx; margin-bottom: 32rpx; }
 .tips-title { color: #1E2A24; font-size: 28rpx; font-weight: 900; display: block; margin-bottom: 16rpx; }
