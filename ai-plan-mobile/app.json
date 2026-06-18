@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "AI 计划工作台",
+    "name": "PlanPal",
     "slug": "ai-plan-mobile",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -35,6 +35,7 @@
       "expo-status-bar"
     ],
     "extra": {
+      "apiBaseUrl": "",
       "router": {},
       "eas": {
         "projectId": "e3e89440-11d4-423e-bd57-138ffb18a478"

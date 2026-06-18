@@ -1,75 +1,88 @@
-// ai-plan-mobile/components/ChatBubble.tsx
-import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { Personality } from '../lib/personality';
+import React, { useEffect, useRef } from 'react';
+import { Animated, Platform, StyleSheet, Text, View } from 'react-native';
+import { advisorStyles, pets, type AdvisorStyleId, type PetId } from '../lib/planIntake';
 
 interface ChatBubbleProps {
   message: string;
   isAI: boolean;
-  personality: Personality;
+  advisorStyle: AdvisorStyleId;
+  petId?: PetId;
 }
 
-export function ChatBubble({ message, isAI, personality }: ChatBubbleProps) {
+export function ChatBubble({ message, isAI, advisorStyle, petId = 'fox' }: ChatBubbleProps) {
+  const fade = useRef(new Animated.Value(0)).current;
+  const style = advisorStyles[advisorStyle];
+  const pet = pets[petId];
+
+  useEffect(() => {
+    Animated.timing(fade, {
+      toValue: 1,
+      duration: 220,
+      useNativeDriver: Platform.OS !== 'web',
+    }).start();
+  }, [fade]);
+
   return (
-    <View style={[styles.container, isAI ? styles.aiContainer : styles.userContainer]}>
+    <Animated.View style={[styles.row, isAI ? styles.aiRow : styles.userRow, { opacity: fade }]}>
       {isAI && (
-        <View style={[styles.avatar, { backgroundColor: personality.backgroundColor }]}>
-          <Text style={styles.avatarEmoji}>{personality.emoji}</Text>
+        <View style={[styles.avatar, { backgroundColor: pet.light, borderColor: pet.border }]}>
+          <Text style={styles.avatarEmoji}>{pet.emoji}</Text>
         </View>
       )}
-      <View style={[
-        styles.bubble,
-        isAI
-          ? [styles.aiBubble, { backgroundColor: personality.backgroundColor, borderColor: personality.borderColor }]
-          : styles.userBubble
-      ]}>
-        <Text style={[styles.message, isAI && { color: personality.color }]}>
+      <View
+        style={[
+          styles.bubble,
+          isAI ? { backgroundColor: style.light, borderColor: style.border } : styles.userBubble,
+        ]}
+      >
+        <Text style={[styles.message, isAI ? { color: '#1E2A24' } : styles.userText]}>
           {message}
         </Text>
       </View>
-    </View>
+    </Animated.View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  row: {
     flexDirection: 'row',
-    marginBottom: 12,
     paddingHorizontal: 16,
+    marginBottom: 12,
   },
-  aiContainer: {
+  aiRow: {
     justifyContent: 'flex-start',
   },
-  userContainer: {
+  userRow: {
     justifyContent: 'flex-end',
   },
   avatar: {
     width: 40,
     height: 40,
-    borderRadius: 20,
-    justifyContent: 'center',
+    borderRadius: 8,
+    borderWidth: 1,
     alignItems: 'center',
+    justifyContent: 'center',
     marginRight: 8,
   },
   avatarEmoji: {
     fontSize: 20,
   },
   bubble: {
-    maxWidth: '75%',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderRadius: 16,
-  },
-  aiBubble: {
+    maxWidth: '78%',
+    borderRadius: 8,
     borderWidth: 1,
-    borderBottomLeftRadius: 4,
+    paddingHorizontal: 14,
+    paddingVertical: 11,
   },
   userBubble: {
-    backgroundColor: '#E5E7EB',
-    borderBottomRightRadius: 4,
+    backgroundColor: '#24352F',
+    borderColor: '#24352F',
   },
   message: {
-    fontSize: 14,
-    lineHeight: 20,
+    fontSize: 15,
+    lineHeight: 22,
+  },
+  userText: {
+    color: '#FFF8EA',
   },
 });

@@ -1,247 +1,422 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import {
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import { useRouter } from 'expo-router';
+import {
+  advisorStyles,
+  createDefaultAdvisorProfile,
+  granularityLabel,
+  pets,
+  reminderLabel,
+  strictnessLabel,
+  type AdvisorGranularity,
+  type AdvisorProfile,
+  type AdvisorStrictness,
+  type PetId,
+  type ReminderStyle,
+} from '../lib/planIntake';
+import { createInitialChatState, createMessage, saveChatState } from '../lib/chatState';
 import { mobilePlanStore } from '../lib/store';
-import { getExecutionStats } from '../lib/shared/executionStats';
-import { TaskCard } from '../components/TaskCard';
-import { theme, statusLabel } from '../lib/theme';
-import type { Plan, PlanTask } from '../lib/shared/schema';
-import { applyPlanUpdate } from '../lib/shared/versioning';
 
-export default function TodayScreen() {
+export default function HomeScreen() {
   const router = useRouter();
-  const [plan, setPlan] = useState<Plan | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [goal, setGoal] = useState('30天考研英语阅读冲刺');
+  const [petId, setPetId] = useState<PetId>('owl');
+  const [advisorProfile, setAdvisorProfile] = useState<AdvisorProfile>(createDefaultAdvisorProfile('coach'));
+  const [hasPlan, setHasPlan] = useState(false);
 
   useEffect(() => {
-    loadPlan();
+    async function checkPlan() {
+      const plan = await mobilePlanStore.getLatestPlan();
+      setHasPlan(Boolean(plan));
+    }
+
+    checkPlan();
   }, []);
 
-  async function loadPlan() {
-    const latest = await mobilePlanStore.getLatestPlan();
-    setPlan(latest);
-    setLoading(false);
+  function updateProfile<K extends keyof AdvisorProfile>(key: K, value: AdvisorProfile[K]) {
+    setAdvisorProfile((current) => ({ ...current, [key]: value }));
   }
 
-  function toggleTaskStatus(task: PlanTask) {
-    if (!plan) return;
-    const nextStatus = task.status === 'done' ? 'todo' : 'done';
-    const updated: PlanTask = { ...task, status: nextStatus, source: 'user_edited' };
-    const nextPlan = {
-      ...plan,
-      tasks: plan.tasks.map((t) => (t.id === task.id ? updated : t)),
-    };
-    const versioned = applyPlanUpdate(plan, nextStatus === 'done' ? '打卡通关' : '撤销打卡', nextPlan);
-    setPlan(versioned);
-    mobilePlanStore.savePlan(versioned);
+  function selectPet(nextPetId: PetId) {
+    setPetId(nextPetId);
+    const defaultStyle = pets[nextPetId].defaultStyle;
+    setAdvisorProfile(createDefaultAdvisorProfile(defaultStyle));
   }
 
-  if (loading) {
-    return (
-      <View style={styles.center}>
-        <Text style={styles.loadingText}>加载中...</Text>
-      </View>
-    );
+  async function start() {
+    const trimmedGoal = goal.trim();
+    if (!trimmedGoal) return;
+
+    const pet = pets[petId];
+    const advisorStyle = pet.defaultStyle;
+    const state = createInitialChatState({
+      goal: trimmedGoal,
+      petId,
+      advisorStyle,
+      advisorProfile,
+      currentStep: 'dailyTime',
+      messages: [
+        createMessage(`${pet.emoji} ${pet.name}会陪你完成这次计划。`, true),
+        createMessage(`我会默认用「${advisorStyles[advisorStyle].name}」方式带你推进。`, true),
+        createMessage(`目标先记下：${trimmedGoal}`, true),
+        createMessage('接下来只补三件事：每天多久、哪天开始、当前基础。', true),
+        createMessage('每天大概能投入多少时间？', true),
+      ],
+    });
+
+    await saveChatState(state);
+    router.push('/chat');
   }
 
-  if (!plan) {
-    return (
-      <View style={styles.center}>
-        <Text style={styles.emptyTitle}>还没有计划</Text>
-        <Text style={styles.emptySubtitle}>点击下方"生成"创建你的第一个计划</Text>
-        <TouchableOpacity
-          style={styles.generateButton}
-          onPress={() => router.push('/generate')}
-        >
-          <Text style={styles.generateButtonText}>去生成计划</Text>
-        </TouchableOpacity>
-      </View>
-    );
-  }
-
-  const today = new Date().toISOString().split('T')[0];
-  const todayTasks = plan.tasks.filter((t) => t.date === today);
-  const stats = getExecutionStats(plan);
-  const nextTask = plan.tasks.find((t) => t.status !== 'done');
+  const activePet = pets[petId];
 
   return (
-    <ScrollView style={styles.container}>
-      {/* Stats Header */}
-      <View style={styles.statsCard}>
-        <View style={styles.statsRow}>
-          <View style={styles.statItem}>
-            <Text style={styles.statNumber}>{stats.doneCount}</Text>
-            <Text style={styles.statLabel}>已完成</Text>
-          </View>
-          <View style={styles.statItem}>
-            <Text style={styles.statNumber}>{stats.todoCount}</Text>
-            <Text style={styles.statLabel}>待挑战</Text>
-          </View>
-          <View style={styles.statItem}>
-            <Text style={styles.statNumber}>{stats.currentStreak}</Text>
-            <Text style={styles.statLabel}>连续天数</Text>
-          </View>
-          <View style={styles.statItem}>
-            <Text style={styles.statNumber}>{stats.progress}%</Text>
-            <Text style={styles.statLabel}>进度</Text>
-          </View>
+    <KeyboardAvoidingView
+      style={styles.screen}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+    >
+      <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
+        <View style={styles.header}>
+          <Text style={styles.kicker}>PlanPal</Text>
+          <Text style={styles.title}>创建你的学习伙伴</Text>
+          <Text style={styles.subtitle}>
+            先选宠物伙伴，再把顾问细节调成你舒服的样子。计划不是一次性领走，而是可以一起协商。
+          </Text>
         </View>
-        {/* Progress Bar */}
-        <View style={styles.progressBar}>
-          <View style={[styles.progressFill, { width: `${stats.progress}%` }]} />
-        </View>
-      </View>
 
-      {/* Next Task */}
-      {nextTask ? (
-        <View style={styles.nextTaskCard}>
-          <Text style={styles.nextTaskLabel}>下一张任务卡</Text>
-          <Text style={styles.nextTaskTitle}>{nextTask.title}</Text>
+        <View style={styles.section}>
+          <Text style={styles.label}>学习目标</Text>
+          <TextInput
+            style={styles.goalInput}
+            value={goal}
+            onChangeText={setGoal}
+            multiline
+            placeholder="例如：90天雅思从5.5到6.5；30天考研英语阅读冲刺"
+            placeholderTextColor="#9A907F"
+          />
         </View>
-      ) : null}
 
-      {/* Today's Tasks */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>
-          今日任务 ({todayTasks.length})
-        </Text>
-        {todayTasks.length === 0 ? (
-          <View style={styles.emptySection}>
-            <Text style={styles.emptyText}>今天没有任务，可以休息或查看计划总览。</Text>
+        <View style={styles.section}>
+          <Text style={styles.label}>选择伙伴</Text>
+          <View style={styles.petGrid}>
+            {(Object.keys(pets) as PetId[]).map((id) => {
+              const pet = pets[id];
+              const selected = petId === id;
+              return (
+                <TouchableOpacity
+                  key={id}
+                  style={[
+                    styles.petCard,
+                    { borderColor: pet.border, backgroundColor: pet.light },
+                    selected && { borderColor: pet.color, borderWidth: 2 },
+                  ]}
+                  onPress={() => selectPet(id)}
+                >
+                  <Text style={styles.petEmoji}>{pet.emoji}</Text>
+                  <Text style={[styles.petName, { color: pet.color }]}>{pet.name}</Text>
+                  <Text style={styles.petSummary}>{pet.summary}</Text>
+                </TouchableOpacity>
+              );
+            })}
           </View>
-        ) : (
-          todayTasks.map((task) => (
-            <TaskCard
-              key={task.id}
-              task={task}
-              onPress={(t) => router.push(`/task/${t.id}`)}
-              onToggleStatus={toggleTaskStatus}
-            />
-          ))
+        </View>
+
+        <View style={styles.section}>
+          <View style={styles.rowBetween}>
+            <Text style={styles.label}>顾问档案</Text>
+            <TouchableOpacity onPress={() => router.push('/personality')}>
+              <Text style={styles.inlineLink}>详细设置</Text>
+            </TouchableOpacity>
+          </View>
+
+          <View style={styles.profilePanel}>
+            <Text style={styles.profileSummary}>
+              {activePet.name}当前会用{advisorStyles[activePet.defaultStyle].name}的底色陪你，
+              你可以继续把它调成更松、更细或更会催。
+            </Text>
+
+            <Text style={styles.profileLabel}>严格程度</Text>
+            <View style={styles.segmentRow}>
+              {(['soft', 'balanced', 'strict'] as AdvisorStrictness[]).map((value) => (
+                <TouchableOpacity
+                  key={value}
+                  style={[
+                    styles.segment,
+                    advisorProfile.strictness === value && styles.segmentSelected,
+                  ]}
+                  onPress={() => updateProfile('strictness', value)}
+                >
+                  <Text
+                    style={[
+                      styles.segmentText,
+                      advisorProfile.strictness === value && styles.segmentTextSelected,
+                    ]}
+                  >
+                    {strictnessLabel(value)}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+
+            <Text style={styles.profileLabel}>任务颗粒度</Text>
+            <View style={styles.segmentRow}>
+              {(['light', 'balanced', 'detailed'] as AdvisorGranularity[]).map((value) => (
+                <TouchableOpacity
+                  key={value}
+                  style={[
+                    styles.segment,
+                    advisorProfile.granularity === value && styles.segmentSelected,
+                  ]}
+                  onPress={() => updateProfile('granularity', value)}
+                >
+                  <Text
+                    style={[
+                      styles.segmentText,
+                      advisorProfile.granularity === value && styles.segmentTextSelected,
+                    ]}
+                  >
+                    {granularityLabel(value)}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+
+            <Text style={styles.profileLabel}>提醒方式</Text>
+            <View style={styles.segmentRow}>
+              {(['quiet', 'checkin', 'push'] as ReminderStyle[]).map((value) => (
+                <TouchableOpacity
+                  key={value}
+                  style={[
+                    styles.segment,
+                    advisorProfile.reminderStyle === value && styles.segmentSelected,
+                  ]}
+                  onPress={() => updateProfile('reminderStyle', value)}
+                >
+                  <Text
+                    style={[
+                      styles.segmentText,
+                      advisorProfile.reminderStyle === value && styles.segmentTextSelected,
+                    ]}
+                  >
+                    {reminderLabel(value)}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </View>
+        </View>
+
+        <TouchableOpacity
+          style={[styles.primaryButton, !goal.trim() && styles.primaryButtonDisabled]}
+          onPress={start}
+          disabled={!goal.trim()}
+        >
+          <Text style={styles.primaryButtonText}>继续制定计划</Text>
+        </TouchableOpacity>
+
+        {hasPlan && (
+          <TouchableOpacity style={styles.secondaryButton} onPress={() => router.push('/plan')}>
+            <Text style={styles.secondaryButtonText}>查看当前计划</Text>
+          </TouchableOpacity>
         )}
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  screen: {
     flex: 1,
-    backgroundColor: theme.cream,
-    padding: 16,
+    backgroundColor: '#F5F1E8',
   },
-  center: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: theme.cream,
-    padding: 32,
+  content: {
+    padding: 22,
+    paddingTop: 64,
+    paddingBottom: 36,
   },
-  loadingText: {
-    fontSize: 16,
-    color: '#666',
+  header: {
+    marginBottom: 28,
   },
-  emptyTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: theme.ink,
-    marginBottom: 8,
-  },
-  emptySubtitle: {
+  kicker: {
+    color: '#2F8F7B',
     fontSize: 14,
-    color: '#666',
-    marginBottom: 24,
-    textAlign: 'center',
+    fontWeight: '800',
+    letterSpacing: 0,
+    marginBottom: 10,
   },
-  generateButton: {
-    backgroundColor: theme.sun,
-    paddingHorizontal: 24,
-    paddingVertical: 12,
-    borderRadius: 12,
-    borderWidth: 2,
-    borderColor: theme.line,
-  },
-  generateButtonText: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: theme.ink,
-  },
-  statsCard: {
-    backgroundColor: theme.paper,
-    borderRadius: 12,
-    borderWidth: 2,
-    borderColor: theme.line,
-    padding: 16,
-    marginBottom: 16,
-  },
-  statsRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
+  title: {
+    color: '#1E2A24',
+    fontSize: 34,
+    fontWeight: '900',
+    lineHeight: 40,
     marginBottom: 12,
   },
-  statItem: {
-    alignItems: 'center',
-  },
-  statNumber: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: theme.ink,
-  },
-  statLabel: {
-    fontSize: 12,
-    color: '#666',
-    marginTop: 4,
-  },
-  progressBar: {
-    height: 8,
-    backgroundColor: theme.cream,
-    borderRadius: 4,
-    overflow: 'hidden',
-  },
-  progressFill: {
-    height: '100%',
-    backgroundColor: theme.berry,
-    borderRadius: 4,
-  },
-  nextTaskCard: {
-    backgroundColor: theme.sky,
-    borderRadius: 12,
-    borderWidth: 2,
-    borderColor: theme.line,
-    padding: 16,
-    marginBottom: 16,
-  },
-  nextTaskLabel: {
-    fontSize: 12,
-    fontWeight: 'bold',
-    color: theme.ink,
-    marginBottom: 4,
-  },
-  nextTaskTitle: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: theme.ink,
+  subtitle: {
+    color: '#625B4D',
+    fontSize: 15,
+    lineHeight: 23,
   },
   section: {
-    marginBottom: 16,
+    marginBottom: 22,
   },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: theme.ink,
-    marginBottom: 12,
+  rowBetween: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 10,
   },
-  emptySection: {
-    backgroundColor: theme.paper,
-    borderRadius: 12,
-    borderWidth: 2,
-    borderColor: theme.line,
-    padding: 24,
+  label: {
+    color: '#2D332F',
+    fontSize: 14,
+    fontWeight: '800',
+    marginBottom: 10,
+  },
+  inlineLink: {
+    color: '#2F8F7B',
+    fontSize: 13,
+    fontWeight: '800',
+  },
+  goalInput: {
+    minHeight: 112,
+    borderWidth: 1,
+    borderColor: '#D8CEBC',
+    borderRadius: 8,
+    backgroundColor: '#FFFCF4',
+    color: '#1E2A24',
+    fontSize: 17,
+    lineHeight: 24,
+    padding: 16,
+    textAlignVertical: 'top',
+  },
+  petGrid: {
+    gap: 10,
+  },
+  petCard: {
+    borderWidth: 1,
+    borderRadius: 8,
+    padding: 14,
+  },
+  petEmoji: {
+    fontSize: 26,
+    marginBottom: 8,
+  },
+  petName: {
+    fontSize: 16,
+    fontWeight: '800',
+    marginBottom: 6,
+  },
+  petSummary: {
+    color: '#625B4D',
+    fontSize: 13,
+    lineHeight: 19,
+  },
+  profilePanel: {
+    borderWidth: 1,
+    borderColor: '#D8CEBC',
+    borderRadius: 8,
+    backgroundColor: '#FFFCF4',
+    padding: 14,
+  },
+  profileSummary: {
+    color: '#625B4D',
+    fontSize: 13,
+    lineHeight: 20,
+    marginBottom: 14,
+  },
+  profileLabel: {
+    color: '#1E2A24',
+    fontSize: 13,
+    fontWeight: '800',
+    marginBottom: 8,
+    marginTop: 4,
+  },
+  segmentRow: {
+    flexDirection: 'row',
+    gap: 8,
+    marginBottom: 10,
+  },
+  segment: {
+    flex: 1,
+    minHeight: 42,
+    borderWidth: 1,
+    borderColor: '#D8CEBC',
+    borderRadius: 8,
+    backgroundColor: '#F5F1E8',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 8,
+  },
+  segmentSelected: {
+    backgroundColor: '#24352F',
+    borderColor: '#24352F',
+  },
+  segmentText: {
+    color: '#625B4D',
+    fontSize: 13,
+    fontWeight: '800',
+  },
+  segmentTextSelected: {
+    color: '#FFF8EA',
+  },
+  modeRow: {
+    flexDirection: 'row',
+    gap: 10,
+  },
+  modeButton: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: '#D8CEBC',
+    borderRadius: 8,
+    backgroundColor: '#FFFCF4',
+    paddingVertical: 14,
     alignItems: 'center',
   },
-  emptyText: {
-    fontSize: 14,
-    color: '#666',
-    textAlign: 'center',
+  modeButtonSelected: {
+    backgroundColor: '#24352F',
+    borderColor: '#24352F',
+  },
+  modeText: {
+    color: '#625B4D',
+    fontSize: 15,
+    fontWeight: '800',
+  },
+  modeTextSelected: {
+    color: '#FFF8EA',
+  },
+  primaryButton: {
+    backgroundColor: '#1E2A24',
+    borderRadius: 8,
+    minHeight: 54,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 4,
+  },
+  primaryButtonDisabled: {
+    opacity: 0.45,
+  },
+  primaryButtonText: {
+    color: '#FFF8EA',
+    fontSize: 17,
+    fontWeight: '900',
+  },
+  secondaryButton: {
+    minHeight: 50,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 10,
+  },
+  secondaryButtonText: {
+    color: '#2F8F7B',
+    fontSize: 15,
+    fontWeight: '800',
   },
 });

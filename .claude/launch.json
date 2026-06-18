@@ -1,0 +1,13 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "planpal-mobile",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["expo", "start", "--web", "--port", "8081"],
+      "cwd": "E:/Claudeprojects/AI_PLAN/ai-plan-mobile",
+      "port": 8081,
+      "autoPort": false
+    }
+  ]
+}
