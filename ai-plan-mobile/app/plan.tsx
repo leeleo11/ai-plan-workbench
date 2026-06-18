@@ -157,6 +157,11 @@ export default function PlanScreen() {
                     onPress={() => router.push(`/task/${task.id}`)}
                   >
                     <Text style={[styles.taskTitle, isDone && styles.taskTitleDone]}>{task.title}</Text>
+                    {task.description && (
+                      <Text style={styles.taskDescription} numberOfLines={2}>
+                        {task.description}
+                      </Text>
+                    )}
                     <Text style={styles.taskMeta}>
                       {task.durationMinutes} 分钟 · {task.priority === 'high' ? '主线' : '支线'}
                       {isDone ? ' · ✅ 已完成' : ''}
@@ -403,6 +408,12 @@ const styles = StyleSheet.create({
   taskTitleDone: {
     color: '#817767',
     textDecorationLine: 'line-through',
+  },
+  taskDescription: {
+    color: '#625B4D',
+    fontSize: 13,
+    lineHeight: 19,
+    marginTop: 4,
   },
   taskMeta: {
     color: '#817767',
